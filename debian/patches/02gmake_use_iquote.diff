@@ -1,3 +1,8 @@
+Using -iquote. instead of -I- for gmake.
+
+This surpresses warnings in newer versions of gcc.
+The patch is purely cosmetical.
+
 Index: debian_fdm/GNUmakefile
 ===================================================================
 --- debian_fdm.orig/GNUmakefile	2008-04-15 23:59:13.000000000 +0200
