@@ -1,0 +1,51 @@
+fdm (1.4-1) unstable; urgency=low
+
+  In version 1.4 there is a small change in the syntax of fdm.conf.
+  Quoting upstream's CHANGES file:
+
+    account and all tokens are now normal match conditions. So, you can
+    do useless stuff like:
+
+        match all and all or all ...
+
+    AND, more importantly, matching accounts now CHANGES to require an
+    operator and follow the normal left-to-right precedence. So:
+
+        match all account "a*" ...
+
+    Becomes:
+
+        match account "a*" ...
+
+    And:
+
+        match "a regexp" or age > 10 accounts { "acc1" acc2" } ...
+
+    Becomes:
+
+        match accounts { "acc1" "acc2 " } and "a regexp" or age > 10 ...
+
+    fdm 1.4 will emit a warning and convert the old style into the new
+    style, but in 1.5 the warning will become an error, and in 1.6 the old
+    code will be removed entirely. So update your rulesets!
+
+    Note that due to limitations in yacc, the line number of the rule in the
+    warning may be off by a few lines (usually one line too far).
+
+  So, fdm 1.4 still supports the old syntax for transitional purposes.
+  Please update your config file(s) to the new syntax, so that updating
+  to version 1.5 will be as painless as possible for you.
+
+  Also note that as of version 1.4 of fdm, the trivial database (tdb)
+  (http://sourceforge.net/projects/tdb/) is used by fdm for its built-in
+  cache. This is the reason for the new dependency for libtdb1.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 02 Oct 2007 20:44:33 +0200
+
+fdm (1.2-1) unstable; urgency=low
+
+  Starting with version 1.2 of fdm, the program includes optional
+  support for Perl-like regular expression via the PCRE library.
+  This debian package is enabling this feature by default.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 27 Jun 2007 11:42:28 +0200

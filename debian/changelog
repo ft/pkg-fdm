@@ -1,0 +1,88 @@
+fdm (1.5-3) unstable; urgency=low
+
+  * The "this time I tried kfreebsd in qemu" release
+  * Update 04support_debianbsds.diff to actually build on GNU/k*BSD.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 27 Apr 2008 08:41:35 +0200
+
+fdm (1.5-2) unstable; urgency=low
+
+  * Switching patch management from dpatch to quilt.
+  * Add 04support_debianbsds.diff to (hopefully) support GNU/k*BSD.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 16 Apr 2008 00:49:21 +0200
+
+fdm (1.5-1) unstable; urgency=low
+
+  * New upstream version
+  * Adding Homepage control field
+  * Requiring at least version 1.1.1~svn26294-1.1 of tdb-dev
+    in Build-Depends: (Closes: #456871)
+  * Incrementing Standards-Version and compat level, no changes needed
+  * Adding a lintian override for possible-gpl-code-linked-with-openssl
+    fdm is licensed under the ISC-license. Only the packaging is GPLed.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 09 Mar 2008 14:27:21 +0100
+
+fdm (1.4-1) unstable; urgency=low
+
+  * New upstream release.
+  * Removing 05fix_cmdline_macros.dpatch and 06fix_regex_match_tags.dpatch,
+    fixed upstream.
+  * Adding dependency for the newly required trivial database,
+    documented in NEWS.
+  * Removing 04enable_pcre.dpatch. Unneeded, if PCRE=1 is used constantly
+    throughout debian/rules.
+  * Fixed typo in this changelog.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 02 Oct 2007 20:52:19 +0200
+
+fdm (1.3c-3) unstable; urgency=low
+
+  * Including a patch (06fix_regex_match_tags.dpatch) that fixes a
+    problem that breaks regex substitution macros for certain
+    messages. (Closes: #440231)
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Fri, 31 Aug 2007 02:22:31 +0200
+
+fdm (1.3c-2) unstable; urgency=low
+
+  * Including a patch (05fix_cmdline_macros.dpatch) that fixes a problem
+    that breaks macros defined on the commandline. (Closes: #440172)
+  * Updated a few comments in dpatches.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 30 Aug 2007 16:09:21 +0200
+
+fdm (1.3c-1) unstable; urgency=low
+
+  * New upstream release.
+  * Updated debian/copyright:
+    compat/vis.{c,h} are gone
+    compat/tree.h was added.
+  * Updated 02gmake_use_iquote.dpatch.
+  * Listing sample configs from examples/ explicitly in debian/rules.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 13 Aug 2007 15:35:25 +0200
+
+fdm (1.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * Added NEWS file to inform the user about the move to PCRE.
+  * Removing 01gmake_destdir.dpatch, 02gmake_install_bin.dpatch,
+    05fix_ragged.dpatch and 06fix_MANUAL_typo.dpatch. Included upstream.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 27 Jun 2007 11:33:00 +0200
+
+fdm (1.1-2) unstable; urgency=low
+
+  * Changing Priority to optional.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 07 May 2007 19:51:07 +0200
+
+fdm (1.1-1) unstable; urgency=low
+
+  * Initial release. (Closes: #419048)
+  * Changed CHILDUSER macro to debianfdm in fdm.h.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 10 Apr 2007 19:52:08 +0200
+

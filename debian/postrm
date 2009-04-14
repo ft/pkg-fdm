@@ -1,0 +1,6 @@
+#! /bin/sh
+#DEBHELPER#
+if getent 'passwd' 'debianfdm' > /dev/null ; then
+  userdel debianfdm || exit 1
+fi
+exit 0

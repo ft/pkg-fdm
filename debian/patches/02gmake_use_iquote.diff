@@ -1,0 +1,13 @@
+Index: debian_fdm/GNUmakefile
+===================================================================
+--- debian_fdm.orig/GNUmakefile	2008-04-15 23:59:13.000000000 +0200
++++ debian_fdm/GNUmakefile	2008-04-15 23:59:15.000000000 +0200
+@@ -62,7 +62,7 @@
+ endif
+ 
+ OBJS= $(patsubst %.c,%.o,$(SRCS))
+-CPPFLAGS+= $(DEFS) -I. -I- $(INCDIRS)
++CPPFLAGS+= $(DEFS) -I. -iquote. $(INCDIRS)
+ ifdef DEBUG
+ CFLAGS+= -g -ggdb -DDEBUG
+ LDFLAGS+= -rdynamic

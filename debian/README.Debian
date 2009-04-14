@@ -1,0 +1,16 @@
+fdm for Debian
+==============
+
+When trying to deal with problems in fdm, it is commonly a good idea,
+to send in fdm's output with a high level of verbosity enabled.
+However, such a high level of verbosity will output user names and
+passwords as well, which you normally do not want others to know
+about. For that purpose, fdm's upstream author provides a small awk
+script, that is supposed to filter out such authentication information
+from fdm's output. This script, called 'fdm-sanitize', is shipped in
+the 'examples' subdirectory of the package's documentation directory.
+
+Thus, to generate debugging output, you can do something like this:
+  % fdm -vvvv f 2>&1 | fdm-sanitize | tee saved-output
+
+  -- Frank Terbeck <ft@bewatermyfriend.org>, Fri Apr 13 16:38:21 CEST 2007

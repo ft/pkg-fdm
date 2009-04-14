@@ -1,0 +1,31 @@
+Index: debian_fdm/MANUAL
+===================================================================
+--- debian_fdm.orig/MANUAL	2008-04-16 00:00:20.000000000 +0200
++++ debian_fdm/MANUAL	2008-04-16 00:00:33.000000000 +0200
+@@ -90,11 +90,11 @@
+ 	$ export PREFIX=/opt		# defaults to /usr/local
+ 	$ sudo make install
+ 
+-If being run as root, fdm requires a user named "_fdm" to exist. It will drop
++If being run as root, fdm requires a user named "debianfdm" to exist. It will drop
+ privileges to this user and its primary group. The user may be added on
+ OpenBSD with, for example:
+ 
+-	# useradd -u 999 -s /bin/nologin -d /var/empty -g=uid _fdm
++	# useradd -u 999 -s /bin/nologin -d /var/empty -g=uid debianfdm
+ 
+ It is not necessary to add a user if fdm is always started by a non-root user.
+ 
+Index: debian_fdm/fdm.h
+===================================================================
+--- debian_fdm.orig/fdm.h	2008-04-16 00:00:20.000000000 +0200
++++ debian_fdm/fdm.h	2008-04-16 00:00:33.000000000 +0200
+@@ -49,7 +49,7 @@
+ #include <openssl/ssl.h>
+ #include <openssl/err.h>
+ 
+-#define CHILDUSER	"_fdm"
++#define CHILDUSER	"debianfdm"
+ #define CONFFILE	".fdm.conf"
+ #define SYSCONFFILE	"/etc/fdm.conf"
+ #define LOCKFILE	".fdm.lock"
