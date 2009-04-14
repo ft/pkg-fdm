@@ -8,8 +8,9 @@ fdm (1.6-1) unstable; urgency=low
     scripts as the policy wants it (although I really fail to see how that
     implicit technique is any better than the explicit and very clear
     '|| exit 1' which the package used before).
+  * Removing 04support_debianbsds.diff, included upstream.
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 14 Apr 2009 05:16:40 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 14 Apr 2009 05:34:40 +0200
 
 fdm (1.5-3) unstable; urgency=low
 
