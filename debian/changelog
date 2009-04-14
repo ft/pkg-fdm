@@ -1,3 +1,9 @@
+fdm (1.6-1) unstable; urgency=low
+
+  * New upstream version (Closes: #523673)
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 14 Apr 2009 04:04:00 +0200
+
 fdm (1.5-3) unstable; urgency=low
 
   * The "this time I tried kfreebsd in qemu" release
