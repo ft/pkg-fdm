@@ -1,8 +1,10 @@
 fdm (1.6-1) unstable; urgency=low
 
   * New upstream version (Closes: #523673)
+  * Switching licencing of debian packaging to ISC, which is the same licence
+    fdm itself. This will obsolete the need for the openssl-gpl-override.
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 14 Apr 2009 04:04:00 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 14 Apr 2009 04:25:45 +0200
 
 fdm (1.5-3) unstable; urgency=low
 

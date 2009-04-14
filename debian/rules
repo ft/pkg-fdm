@@ -31,8 +31,6 @@ install: build
 	dh_clean -k
 	dh_installdirs
 	$(MAKE) PREFIX=/usr PCRE=1 DESTDIR=$(CURDIR)/debian/fdm install
-	# installing lintian overrides file
-	install -m644 -D debian/fdm.lintian-overrides $(CURDIR)/debian/fdm/usr/share/lintian/overrides/fdm
 
 binary-indep: build install
 
