@@ -1,6 +1,8 @@
 #! /bin/sh
+set -e
+
 #DEBHELPER#
 if ! getent 'passwd' 'debianfdm' > /dev/null ; then
-  adduser --quiet --system --no-create-home --disabled-login --disabled-password debianfdm || exit 1
+  adduser --quiet --system --no-create-home --disabled-login --disabled-password debianfdm
 fi
 exit 0
