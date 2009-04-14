@@ -2,11 +2,11 @@ Change the user used by fdm if run as root to 'debianfdm' instead of '_fdm'
 which is not allowed in debian. (Actually I don't quite remember if it's
 strictly not permitted by debian's policy, but I've stopped caring.)
 
-Index: debian_fdm/MANUAL
+Index: fdm-1.6/MANUAL
 ===================================================================
---- debian_fdm.orig/MANUAL	2008-04-16 00:00:20.000000000 +0200
-+++ debian_fdm/MANUAL	2008-04-16 00:00:33.000000000 +0200
-@@ -90,11 +90,11 @@
+--- fdm-1.6.orig/MANUAL	2009-04-14 06:00:40.000000000 +0200
++++ fdm-1.6/MANUAL	2009-04-14 06:01:02.000000000 +0200
+@@ -91,11 +91,11 @@
  	$ export PREFIX=/opt		# defaults to /usr/local
  	$ sudo make install
  
@@ -20,10 +20,10 @@ Index: debian_fdm/MANUAL
  
  It is not necessary to add a user if fdm is always started by a non-root user.
  
-Index: debian_fdm/fdm.h
+Index: fdm-1.6/fdm.h
 ===================================================================
---- debian_fdm.orig/fdm.h	2008-04-16 00:00:20.000000000 +0200
-+++ debian_fdm/fdm.h	2008-04-16 00:00:33.000000000 +0200
+--- fdm-1.6.orig/fdm.h	2009-04-14 06:00:40.000000000 +0200
++++ fdm-1.6/fdm.h	2009-04-14 06:01:02.000000000 +0200
 @@ -49,7 +49,7 @@
  #include <openssl/ssl.h>
  #include <openssl/err.h>
