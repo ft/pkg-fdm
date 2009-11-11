@@ -1,0 +1,7 @@
+This package is using quilt to make alterations to the upstream sources.
+No special action needs to be taken, the debian/rules file should take care
+of everything in a fairly automatic manner.
+
+In order to please lintian this file is now put in place.
+
+Refer to /usr/share/doc/quilt/README.source for further details.
