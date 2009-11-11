@@ -1,5 +1,6 @@
 fdm (1.6-2) unstable; urgency=low
 
+  * Adding -lcrypto do $(LIBS) to support GNU gold (Closes: #554287)
   * Incrementing Standards-Version, no changes needed
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 10 Nov 2009 21:31:36 +0000
