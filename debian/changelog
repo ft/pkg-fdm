@@ -1,3 +1,9 @@
+fdm (1.6-2) unstable; urgency=low
+
+  * Incrementing Standards-Version, no changes needed
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 10 Nov 2009 21:31:36 +0000
+
 fdm (1.6-1) unstable; urgency=low
 
   * New upstream version (Closes: #523673)
