@@ -2,8 +2,10 @@ fdm (1.6-4) unstable; urgency=low
 
   * The "package housekeeping" release.
   * Incrementing Standards-Version; no changes needed.
+  * Use `debian/source/format' and select "3.0 (quilt)" to make lintian
+    happy. No other changes required.
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 Sep 2010 12:27:52 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 Sep 2010 12:29:57 +0200
 
 fdm (1.6-3) unstable; urgency=low
 
