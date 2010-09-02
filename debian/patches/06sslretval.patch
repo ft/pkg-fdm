@@ -1,0 +1,36 @@
+Include a patch from upstream, which fixes #595057.
+
+Index: debian_fdm/io.c
+===================================================================
+--- debian_fdm.orig/io.c	2010-09-02 13:34:10.000000000 +0200
++++ debian_fdm/io.c	2010-09-02 13:34:20.000000000 +0200
+@@ -191,6 +191,7 @@
+ 	if (cause != NULL)
+ 		*cause = xstrdup(io->error);
+ 	xfree(pfds);
++	errno = 0;
+ 	return (-1);
+ }
+ 
+@@ -344,6 +345,10 @@
+ 			case SSL_ERROR_WANT_WRITE:
+ 				io->flags |= IOF_NEEDFILL;
+ 				break;
++			case SSL_ERROR_SYSCALL:
++				if (errno == EAGAIN || errno == EINTR)
++					break;
++				/* FALLTHROUGH */
+ 			default:
+ 				if (io->error != NULL)
+ 					xfree(io->error);
+@@ -414,6 +419,10 @@
+ 				 * so this can be ignored
+ 				 */
+ 				break;
++			case SSL_ERROR_SYSCALL:
++				if (errno == EAGAIN || errno == EINTR)
++					break;
++				/* FALLTHROUGH */
+ 			default:
+ 				if (io->error != NULL)
+ 					xfree(io->error);

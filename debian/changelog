@@ -1,3 +1,10 @@
+fdm (1.6-3) unstable; urgency=low
+
+  * New patch: 06sslretval.patch: Improve SSL error-handling which led to
+    excessive memory allocation with broken mails. (Closes: #595057)
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 Sep 2010 12:18:13 +0200
+
 fdm (1.6-2) unstable; urgency=low
 
   * Adding -lcrypto do $(LIBS) to support GNU gold (Closes: #554287)
