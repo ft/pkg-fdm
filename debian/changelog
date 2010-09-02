@@ -2,8 +2,11 @@ fdm (1.6-3) unstable; urgency=low
 
   * New patch: 06sslretval.patch: Improve SSL error-handling which led to
     excessive memory allocation with broken mails. (Closes: #595057)
+  * New patch: 07incrlinelim.patch: Increase the maximum line limit for a
+    mail. This is upstream's recommended workaround to let fdm download
+    broken mails which caused #595057.
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 Sep 2010 12:18:13 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 Sep 2010 12:21:09 +0200
 
 fdm (1.6-2) unstable; urgency=low
 

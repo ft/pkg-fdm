@@ -1,0 +1,31 @@
+Increase the maximum line length limit used by fdm to work around problems
+with badly formed emails, which also led to #595057. Without this, fdm
+will refuse to download such badly formed mails bigger than 1MiB.
+
+This is upstream's recommended workaround for now:
+
+Nicholas Marriott wrote:
+[...]
+> i suggest you run CVS HEAD or at least fdm 1.6 and bump the line limit
+> for now until i have time to look into a more permanent solution (unless
+> you want to do it or persuade someone else to). if you make the line
+> limit longer than your maximum-size setting then fdm will hit the latter
+> first
+
+
+...and `IO_MAXLINELEN' is that limit.
+
+
+Index: debian_fdm/io.h
+===================================================================
+--- debian_fdm.orig/io.h	2010-09-02 16:24:20.000000000 +0200
++++ debian_fdm/io.h	2010-09-02 16:27:09.000000000 +0200
+@@ -35,7 +35,7 @@
+ };
+ 
+ /* Limits at which to fail. */
+-#define IO_MAXLINELEN (1024 * 1024) 		/* 1 MB */
++#define IO_MAXLINELEN (32 * 1024 * 1024) 		/* 32 MB */
+ 
+ /* IO line endings. */
+ #define IO_CRLF "\r\n"
