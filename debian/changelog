@@ -1,6 +1,14 @@
 fdm (1.6+cvs20111013-1) unstable; urgency=low
 
   * Imported upstream CVS on Oct 13th, 2011
+    - Removing a number of patches which are included upstream now.
+    - Includes patch which should build with --as-needed. (Closes: #631689)
+  * Depending on libtdb-dev now (Closes: #639176)
+  * Moving away from explicit quilt-enabled build to pure-3.0 (quilt).
+  * Adjusting debian/rules to changes in upstream build system.
+  * Incrementing Standards-Version; no changes needed.
+  * Use $(MAKE) everywhere in debian/rules.
+  * Adding recommended targets to debian/rules to make lintian happy.
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 13 Oct 2011 21:05:14 +0200
 
