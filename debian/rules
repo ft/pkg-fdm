@@ -11,6 +11,7 @@ endif
 
 build: build-stamp
 	$(MAKE) PCRE=1 PREFIX=/usr
+	$(MAKE) -f tools/dist.mk manual
 
 build-stamp: debian/stamp-patched
 	dh_testdir
