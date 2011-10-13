@@ -15,6 +15,7 @@ build: build-stamp
 
 build-stamp: debian/stamp-patched
 	dh_testdir
+	sh configure
 	$(MAKE) depend PREFIX=/usr PCRE=1
 	$(MAKE)        PREFIX=/usr PCRE=1
 	touch $@
@@ -23,6 +24,7 @@ clean: unpatch
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
+	test -f config.mk || sh configure
 	$(MAKE) clean
 	dh_clean
 
