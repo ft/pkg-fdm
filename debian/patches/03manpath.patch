@@ -1,0 +1,18 @@
+Changing manpage installation paths to where debian wants them.
+
+Index: code/debian_fdm/GNUmakefile
+===================================================================
+--- debian_fdm.orig/GNUmakefile	2011-10-13 21:52:59.000000000 +0200
++++ debian_fdm/GNUmakefile	2011-10-13 21:53:43.000000000 +0200
+@@ -71,7 +71,7 @@
+ install:	all
+ 		$(INSTALLDIR) $(DESTDIR)$(PREFIX)/bin
+ 		$(INSTALLBIN) fdm $(DESTDIR)$(PREFIX)/bin/fdm
+-		$(INSTALLDIR) $(DESTDIR)$(PREFIX)/man/man1
+-	 	$(INSTALLMAN) fdm.1 $(DESTDIR)$(PREFIX)/man/man1/fdm.1
+-		$(INSTALLDIR) $(DESTDIR)$(PREFIX)/man/man5
+-		$(INSTALLMAN) fdm.conf.5 $(DESTDIR)$(PREFIX)/man/man5/fdm.conf.5
++		$(INSTALLDIR) $(DESTDIR)$(PREFIX)/share/man/man1
++	 	$(INSTALLMAN) fdm.1 $(DESTDIR)$(PREFIX)/share/man/man1/fdm.1
++		$(INSTALLDIR) $(DESTDIR)$(PREFIX)/share/man/man5
++		$(INSTALLMAN) fdm.conf.5 $(DESTDIR)$(PREFIX)/share/man/man5/fdm.conf.5
