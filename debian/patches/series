@@ -1,7 +1,2 @@
-01gmake_man_inst_path.diff
-02gmake_use_iquote.diff
-03rename_childuser.diff
-04support_gold.diff
-05savemove.patch
-06sslretval.patch
-07incrlinelim.patch
+01rename_childuser.patch
+02incrlinelim.patch

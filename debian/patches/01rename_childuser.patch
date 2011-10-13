@@ -4,8 +4,8 @@ strictly not permitted by debian's policy, but I've stopped caring.)
 
 Index: fdm-1.6/MANUAL
 ===================================================================
---- fdm-1.6.orig/MANUAL	2009-04-14 06:00:40.000000000 +0200
-+++ fdm-1.6/MANUAL	2009-04-14 06:01:02.000000000 +0200
+--- fdm-1.6.orig/MANUAL.in	2009-04-14 06:00:40.000000000 +0200
++++ fdm-1.6/MANUAL.in	2009-04-14 06:01:02.000000000 +0200
 @@ -91,11 +91,11 @@
  	$ export PREFIX=/opt		# defaults to /usr/local
  	$ sudo make install
