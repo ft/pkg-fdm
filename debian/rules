@@ -10,7 +10,7 @@ else
 endif
 
 build: build-stamp
-	make PCRE=1 PREFIX=/usr
+	$(MAKE) PCRE=1 PREFIX=/usr
 
 build-stamp: debian/stamp-patched
 	dh_testdir
