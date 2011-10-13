@@ -1,7 +1,5 @@
 #!/usr/bin/make -f
 
-include /usr/share/quilt/quilt.make
-
 CFLAGS = -Wall -g
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
@@ -13,14 +11,14 @@ build: build-stamp
 	$(MAKE) PCRE=1 PREFIX=/usr
 	$(MAKE) -f tools/dist.mk manual
 
-build-stamp: debian/stamp-patched
+build-stamp:
 	dh_testdir
 	sh configure
 	$(MAKE) depend PREFIX=/usr PCRE=1
 	$(MAKE)        PREFIX=/usr PCRE=1
 	touch $@
 
-clean: unpatch
+clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp configure-stamp
