@@ -11,6 +11,7 @@ fdm (1.6+cvs20111013-1) unstable; urgency=low
   * Adding recommended targets to debian/rules to make lintian happy.
   * Remove `MANUAL' in `clean' of `debian/rules' to leave a clean build
     directory.
+  * Use `--abort-on-upstream-changes' at all costs.
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 13 Oct 2011 21:05:14 +0200
 
