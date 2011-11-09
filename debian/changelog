@@ -9,6 +9,8 @@ fdm (1.6+cvs20111013-1) unstable; urgency=low
   * Incrementing Standards-Version; no changes needed.
   * Use $(MAKE) everywhere in debian/rules.
   * Adding recommended targets to debian/rules to make lintian happy.
+  * Remove `MANUAL' in `clean' of `debian/rules' to leave a clean build
+    directory.
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 13 Oct 2011 21:05:14 +0200
 
