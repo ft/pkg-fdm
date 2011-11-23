@@ -1,3 +1,10 @@
+fdm (1.6+cvs20111013-2) unstable; urgency=low
+
+  * Add patch (04kfreebsd) by Robert Millan to fix build failures on
+    kfreebsd. (Closes: #648246)
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 23 Nov 2011 11:27:00 +0100
+
 fdm (1.6+cvs20111013-1) unstable; urgency=low
 
   * Imported upstream CVS on Oct 13th, 2011

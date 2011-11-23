@@ -1,0 +1,30 @@
+Build fix for kfreebsd by Robert Millan <rmh@debian.org>.
+
+This addresses #648246:
+    <http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=648246>
+
+As soon as it's verified that the patch works, it needs to be forwarded to
+upstream for inclusion.
+
+Index: debian_fdm/configure
+===================================================================
+--- debian_fdm.orig/configure	2011-11-23 11:18:11.000000000 +0100
++++ debian_fdm/configure	2011-11-23 11:18:28.000000000 +0100
+@@ -26,12 +26,16 @@
+ EOF
+ 	;;
+ # ------------------------------------------------------------------------------
+-    Linux)
++    Linux|GNU|GNU/*)
+ 	cat <<EOF >>$CONFIG_H
+ #define HAVE_SETRESUID
+ #define HAVE_SETRESGID
++EOF
++	if [ $FDM_PLATFORM = Linux ] ; then
++		cat << EOF >>$CONFIG_H
+ #define HAVE_MREMAP
+ EOF
++	fi
+ 	cat <<EOF >>$CONFIG_MK
+ SRCS+=  compat/strlcat.c \
+ 	compat/strlcpy.c \
