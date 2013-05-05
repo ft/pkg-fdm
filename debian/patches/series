@@ -1,4 +1,3 @@
 01rename_childuser.patch
 02incrlinelim.patch
-03manpath.patch
-04kfreebsd.patch
+03kfreebsd.patch
