@@ -2,8 +2,11 @@ fdm (1.7-1) unstable; urgency=low
 
   * New upstream release
   * Incrementing Standards-Version; no changes needed.
+  * Refreshed quilt patches, that needed it.
+  * Removed 03manpath.patch, since MANPATH can be set via a make variable
+    now. (Moving next patch up: 04kfreebsd.patch -> 03kfreebsd.patch)
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 May 2013 16:41:20 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 May 2013 17:28:22 +0200
 
 fdm (1.6+cvs20111013-2) unstable; urgency=low
 
