@@ -19,7 +19,6 @@ build-stamp:
 	dh_testdir
 	dh_auto_configure
 	$(MAKE) depend PREFIX=/usr PCRE=1
-	dh_auto_build -- PCRE=1
 	touch $@
 
 clean:
