@@ -12,20 +12,19 @@ build-arch: build
 build-indep: build
 
 build: build-stamp
-	$(MAKE) PCRE=1 PREFIX=/usr
+	dh_auto_build -- PCRE=1
 	$(MAKE) -f tools/dist.mk manual
 
 build-stamp:
 	dh_testdir
-	sh configure
+	dh_auto_configure
 	$(MAKE) depend PREFIX=/usr PCRE=1
-	$(MAKE)        PREFIX=/usr PCRE=1
+	dh_auto_build -- PCRE=1
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp configure-stamp
 	test -f config.mk || sh configure
 	$(MAKE) clean
 	rm -f config.h config.mk MANUAL
