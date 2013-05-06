@@ -5,8 +5,13 @@ fdm (1.7-1) unstable; urgency=low
   * Refreshed quilt patches, that needed it.
   * Removed 03manpath.patch, since MANPATH can be set via a make variable
     now. (Moving next patch up: 04kfreebsd.patch -> 03kfreebsd.patch)
+  * Move to debhelper 9 to get support for dpkg-buildflags, so lintian
+    doesn't warn about missing hardening flags anymore. (Incrementing
+    compat level and adjusting debhelper dependency.)
+  * Thanks to Axel Beckert and Michael Prokop for helping with this
+    particular update!
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 05 May 2013 17:28:22 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 06 May 2013 16:46:43 +0200
 
 fdm (1.6+cvs20111013-2) unstable; urgency=low
 
