@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: Frank Terbeck <ft@bewatermyfriend.org>
 Build-Depends: debhelper (>= 9~), libssl-dev, zlib1g-dev, libpcre3-dev, libtdb-dev, bison, flex
 Homepage: http://fdm.sf.net
-Standards-Version: 3.9.3
+Standards-Version: 3.9.4
 
 Package: fdm
 Architecture: any
