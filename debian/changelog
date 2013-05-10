@@ -2,8 +2,10 @@ fdm (1.7-2) unstable; urgency=low
 
   * Backport new upstream option `no-tls1' to support more broken servers.
   * Incrementing Standards-Version; no changes needed.
+  * Add debian/watch file; from Axel Beckert
+  * Add Vcs-* headers to debian/control; again from Axel Beckert. Thanks!
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 09 May 2013 13:28:25 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Fri, 10 May 2013 15:45:11 +0200
 
 fdm (1.7-1) unstable; urgency=low
 
