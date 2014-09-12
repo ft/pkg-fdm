@@ -1,3 +1,10 @@
+fdm (1.7+cvs20140912-1) unstable; urgency=low
+
+  * Import upstream CVS state.
+  * Incrementing Standards-Version; no changes needed.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Fri, 12 Sep 2014 23:07:34 +0200
+
 fdm (1.7-2) unstable; urgency=low
 
   * Backport new upstream option `no-tls1' to support more broken servers.
