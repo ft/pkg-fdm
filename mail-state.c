@@ -1,4 +1,4 @@
-/* $Id: mail-state.c,v 1.37 2009/10/22 08:15:09 nicm Exp $ */
+/* $Id: mail-state.c,v 1.38 2013/05/07 13:07:45 nicm Exp $ */
 
 /*
  * Copyright (c) 2006 Nicholas Marriott <nicm@users.sourceforge.net>
