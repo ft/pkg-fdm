@@ -1,4 +1,4 @@
-/* $Id: connect.c,v 1.77 2009/05/17 19:20:08 nicm Exp $ */
+/* $Id: connect.c,v 1.81 2014/02/15 23:44:47 nicm Exp $ */
 
 /*
  * Copyright (c) 2006 Nicholas Marriott <nicm@users.sourceforge.net>
@@ -33,13 +33,16 @@
 
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include <openssl/x509v3.h>
 
 #include "fdm.h"
 
+char   *check_alt_names(char *, char *, X509 *);
 int	sslverify(struct server *, SSL *, char **);
 int	getport(char *);
 int	httpproxy(struct server *, struct proxy *, struct io *, int, char **);
 int	socks5proxy(struct server *, struct proxy *, struct io *, int, char **);
+
 SSL    *makessl(struct server *, int, int, int, char **);
 
 char *
@@ -81,6 +84,37 @@ sslerror2(int n, const char *fn)
 	xasprintf(&cause,
 	    "%s: %d: %s", fn, n, ERR_error_string(ERR_get_error(), NULL));
 	return (cause);
+}
+
+char *
+check_alt_names(char *host, char *fqdn, X509 *x509)
+{
+	char			*found, *buf;
+	const GENERAL_NAMES	*ans;
+	const GENERAL_NAME	*p;
+	int			 n;
+
+	ans = X509_get_ext_d2i(x509, NID_subject_alt_name, NULL, NULL);
+	if (ans == NULL)
+		return (NULL);
+	n = sk_GENERAL_NAME_num(ans);
+
+	found = NULL;
+	while (n-- > 0 && found == NULL) {
+		p = sk_GENERAL_NAME_value(ans, n);
+		if (p == NULL || p->type != GEN_DNS)
+			continue;
+		if (ASN1_STRING_to_UTF8((u_char **)&buf, p->d.dNSName) <= 0)
+			continue;
+		if (fnmatch(buf, host, FNM_NOESCAPE|FNM_CASEFOLD) == 0 ||
+		    (fqdn != NULL &&
+		    fnmatch(buf, fqdn, FNM_NOESCAPE|FNM_CASEFOLD) == 0))
+			found = buf;
+		OPENSSL_free(buf);
+	}
+
+	sk_GENERAL_NAME_free(ans);
+	return (found);
 }
 
 int
@@ -130,6 +164,11 @@ sslverify(struct server *srv, SSL *ssl, char **cause)
 		if (ptr2 != NULL)
 			*ptr2 = '/';
 	} while ((ptr = strstr(ptr, "/CN=")) != NULL);
+
+	/* No valid CN found. Try alternative names. */
+	if (ptr == NULL)
+		ptr = check_alt_names(srv->host, fqdn, x509);
+
 	if (fqdn != NULL)
 		xfree(fqdn);
 
@@ -534,7 +573,10 @@ makessl(struct server *srv, int fd, int verify, int timeout, char **cause)
 	int	 n, mode;
 
 	ctx = SSL_CTX_new(SSLv23_client_method());
-        SSL_CTX_set_options(ctx, SSL_OP_ALL);
+	if (srv->tls1)
+		SSL_CTX_set_options(ctx, SSL_OP_ALL);
+	else
+		SSL_CTX_set_options(ctx, SSL_OP_ALL | SSL_OP_NO_TLSv1);
         SSL_CTX_set_default_verify_paths(ctx);
 	SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, NULL);
 
