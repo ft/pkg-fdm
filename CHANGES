@@ -1,0 +1,919 @@
+07 May 2011
+
+* Add mbox tags for messages fetched from a mbox
+
+01 September 2010
+
+* Detect GMail's XYZZY capability for IMAP and use it to try and workaround
+  some of their broken behaviour (incorrectly reported message sizes).
+
+31 May 2009
+
+* Print a warning on missing maildirs when fetching from them rather than
+  crashing or giving an error. Reported by Frank Terbeck.
+
+17 May 2009
+
+* Introduce a configure script and tidy up build infrastructure.
+
+02 May 2009
+
+* GMail IMAP doesn't correctly set the \Seen flag after UID FETCH BODY[], so
+  explicitly set it with STORE when mail is kept. Reported by Patrice Clement.
+
+30 April 2009
+
+* Properly count mails when polling multiple folders on a single IMAP server,
+  reported by Claudio M. Alessi.
+
+24 March 2009
+
+* Support user and pass on NNTP, requested by Michael Hamann.
+
+08 March 2009
+
+* Escape . properly when delivering to SMTP.
+
+27 December 2008
+
+* Don't be as strict about format at the end of messages when using IMAP -
+  accept additional information as well as FLAGS. Reported by rivo nurges.
+
+22 December 2008
+
+* fdm 1.6 released.
+
+17 December 2008
+
+* Only look at HOME environment variable if -h flag is passed.
+
+28 October 2008
+
+* Alter IMAP fetching code to build a UID list of mails to fetch and then fetch
+  them, rather than iterating through all the mails regardless.
+
+07 September 2008
+
+* Process all privsep messages in parent rather than just the first.
+  Fixes timeouts reported by Frank Terbeck.
+
+08 August 2008
+
+* Sort fetch list for POP3 to preserve server mailbox order, requested
+  by Jeremy C Reed.
+* Fix bug where current user could overwrite default-user/command-user
+  from configuration file.
+
+26 June 2008
+
+* Lookup using courier-authlib. Build with make -DLOOKUP_COURIER and
+  use "set lookup-order courier passwd".
+* Framework for changing user lookup method. At the moment only normal
+  Unix passwd (getpwnam(3)) is supported. This means only string
+  usernames are supported - to enter a numeric Unix UID, enclose it
+  in quotes.
+* Get rid of from-headers which was ugly and unreliable.
+
+30 May 2008
+
+* Make NNTP fetching save the cache file after each mail since some NNTP
+  servers (such as my ISP's) are horrendously unreliable.
+* Handle 423/430 response from ARTICLE command in NNTP correctly.
+
+26 May 2008
+
+* New option: parallel-accounts. Sets number of accounts to fetch in parallel.
+
+22 May 2008
+
+* deliver-imap fetch method; suggested by Jason Dixon a while ago.
+
+03 April 2008
+
+* Support an extra space on the optional FLAGS response when fetching a mail,
+  fixes problems with CommuniGate Pro, thanks to Anthony Wood.
+* New flags, no-cram-md5 and no-login, on IMAP accounts to force fdm not to
+  use cram-md5 or login authentication even if the server supports it. From
+  Anthony Wood.
+
+01 April 2008
+
+* Support SIGUSR1 as an alias for SIGINFO, for platforms without SIGINFO.
+
+06 March 2008
+
+* Support multiple folders (folders { "a" "b" }) on IMAP fetching. Requested by
+  Claudio Alessi.
+
+05 March 2008
+
+* Print current progress on SIGINFO. Be careful with this, it is possible
+  there are places where an unhandled EINTR would cause fdm to die.
+
+04 March 2008
+
+* fdm 1.5 released.
+
+10 February 2008
+
+* Consistently use geteuid().
+* Correct mail_month/mail_dayofyear tags.
+
+10 January 2008
+
+* Added "from" to smtp action to specify envelope from. Requested by Marco
+  Lopes.
+
+07 January 2008
+
+* Use <>s around envelope addresses when using SMTP. Reported by Marco Lopes.
+
+08 December 2007
+
+* Don't let mbox or maildir fetch code exit and free stuff until all the mail is
+  dealt with (queues are empty). Fixes mbox fetching problems reported by
+  akarinotengoku at gmail.com.
+
+03 December 2007
+
+* Bug fix: restore non-blocking mode properly after constructing SSL
+  connection. This bug prevented SSL over a proxy working.
+
+06 November 2007
+
+* Use +FLAGS.SILENT instead of +FLAGS to mark IMAP mail as deleted, as we
+  don't need the new flags.
+
+03 November 2007
+
+* Exchange sometimes includes a FLAGS update as part of its FETCH response,
+  which made fdm complain. Change to accept it without error. Reported by
+  Leo D'Angelo.
+* Google IMAP has problems with naked flag lists on STORE commands (which are
+  valid). Change to enclose the flags list in brackets. Reported by Andrew
+  Pantyukhin.
+
+25 October 2007
+
+* New option, no-create, prevents fdm creating missing path components or files
+  when delivering to maildirs or mboxes.
+* Create entire paths if missing when delivering to maildirs or mboxes.
+
+10 October 2007
+
+* Don't accept "+OK N" as well as "+OK N M" in response to STAT.
+* New option: command-user. This is the user used to run exec/pipe match
+  conditions if one is not specified. The default is the user who ran fdm
+  (root if running as root).
+
+09 October 2007
+
+* Command line cache manipulation. The following commands are available:
+
+	fdm cache list [path]
+		List details of cache path or all caches in the configuration
+		file if not specified.
+
+	fdm cache dump path
+		Dump cache keys in the form "key time" where time is is
+		Unix time (seconds from epoch). This allows to easily sort by
+		time:
+		
+			fdm cache dump ~/my/cache|sort -n +2
+
+		Or to print the time in a particular date format:
+	
+			fdm cache dump ~/my/cache|while read i; do
+				set -- $i
+				echo $1 `date -r$2 "+%Y-%m-%d% %H:%M:%S"`
+			done
+
+		And so on.
+
+	fdm cache add path key
+	fdm cache remove path key
+		Add a key to or remove a key from a cache.
+
+	fdm cache clear path
+		Clear an entire cache (remove all the keys).
+
+	This feature suggested by Thomas@BIC.
+* Restore regress files to distribution. Requested by Mike Erdely for the
+  OpenBSD port. Note that there is no guarantee regressions tests will run on
+  other operating systems!
+
+02 October 2007
+
+* "remove-from-cache" action.
+* Rename to-cache to add-to-cache (to-cache remains as a compatibility alias).
+  This is to match the planned remove-from-cache and perhaps other similar.
+* The account/all deprecated support and warnings are now gone.
+
+01 October 2007
+
+* fdm 1.4 released.
+
+25 September 2007
+
+* For POP3 and IMAP, don't have a separate state for waiting-to-purge. Mail
+  could potentially be dropped (in fact, was very likely to be) while waiting
+  for queues to empty in that state. Instead, loop though the next state which
+  ensures all dropped mail is dealt with before attempting to purge.
+* When tags are replaced in strings, shell metacharacters are now stripped.
+  This is to permit expressions such as:
+
+	match "^Subject: (.*)" action tag "subject" value "%1"
+	match all ... action exec "echo %[subject]"
+
+  Without risk of the subject being, for instance, ";rm -Rf ~". This applies
+  to all tags, even those defined manually or by fdm itself, and happens every
+  time any tag is inserted (so in the above, the subject is in fact stripped
+  twice, once when inserted as %1 and once as %[subject] - the second time to
+  no effect).
+
+  The list of characters to strip can be altered using the strip-characters
+  option. The default is:
+
+	set strip-characters "\\<>$%^&*|{}[]\"'`;"
+
+  Stripping may be completely disabled by setting this string to "" (this will
+  return to the old behaviour), or disabled per-tag by prefixing the tag name
+  with :, for example %[:subject] or %:1.
+
+  Note that this protection is limited: it does not, for instance, prevent use
+  of ".." if using tags to create paths. Care should always be taken when
+  inserting any data extracted from an incoming mail into a shell command.
+
+24 September 2007
+
+* All regexps (match, string, command) are now case insensitive by default and 
+  may be prefixed by "case" to enable case sensitivity.
+* The match string syntax changes were bloat and are reverted.
+
+19 September 2007
+
+* POP3 over pipe. Same as IMAP.
+
+18 September 2007
+
+* Split POP3 core off into pop3-common.c a la IMAP, in preparation for
+  POP3-over-pipe.
+* Change POP3 old/new mail to work from a list of mail-to-fetch and only ask
+  for that mail, rather than retrieving and checking every mail UID.
+
+17 September 2007
+
+* Quote IMAP folder name to allow spaces and so on. SF bug 1791056.
+
+05 September 2007
+
+* Don't purge if no mails have been dropped.
+
+03 September 2007
+
+* Options to fetch only new or old mail from POP3 or IMAP accounts. Based on
+  request to mailing list, and ensuing discussion, from patnel972-fdm at 
+  yahoo.fr.
+
+  This introduces two new keywords for accounts: new-only and old-only. For
+  POP3 accounts, a cache file must also be specified (similar to NNTP); this
+  holds the list of UIDs for all the mail present in the account on the last
+  fetch. For IMAP, the server-managed \Seen flag is used. Servers should set
+  this flag once a mail has been read (downloaded). The \Recent flag isn't 
+  used because it is unset when any client is told about the mail - even a 
+  poll is enough.
+
+  Examples of syntax are:
+
+	account pop3 server ... new-only cache "~/my/pop3.cache.file"
+
+	account imap server ... old-only
+ 
+  This is useful for people who like to keep mail on the server to be read
+  using a web interface or suchlike. Note that it is up to the user to make
+  sure their account doesn't get full! fdm does not check this or have any
+  abilities to delete or manage mail that isn't fetched.
+
+02 September 2007
+
+* More changes to io.c/command.c to fix issues on Linux introduced by fixes to
+  IMAP-over-pipe. Hopefully all working now.
+
+31 August 2007
+
+* Rewrote user header searching and address matching to clean up the code and
+  work with multiple headers, also fix some fnmatch problems.
+
+30 August 2007
+
+* Fixed silly bug in replace.c. Using the base rather than data offset for %0-%9
+  so they pointed at the wrong data if a from line had been trimmed. Found by
+  Jo Fahlke, reported via Frank Terbeck through a Debian bug report.
+* Move command-line macro parsing into parse.y/parse-fn.c and make it actually
+  work again. Found by Jo Fahlke, reported via Frank Terbeck.
+* account and all tokens are now normal match conditions. So, you can do useless
+  stuff like:
+
+	match all and all or all ...
+
+  AND, more importantly, matching accounts now CHANGES to require an operator
+  and follow the normal left-to-right precedence. So:
+
+	match all account "a*" ...
+
+  Becomes:
+
+	match account "a*" ...
+
+  And:
+
+	match "a regexp" or age > 10 accounts { "acc1" acc2" } ...
+
+  Becomes:
+
+	match accounts { "acc1" "acc2 " } and "a regexp" or age > 10 ...
+
+  fdm 1.4 will emit a warning and convert the old style into the new style, but
+  in 1.5 the warning will become an error, and in 1.6 the old code will be
+  removed entirely. So update your rulesets!
+
+  Note that due to limitations in yacc, the line number of the rule in the
+  warning may be off by a few lines (usually one line too far).
+
+25 August 2007
+
+* Break timer stuff off into timer.c.
+* Fix queue-high == 1 to not hang after first mail.
+
+24 August 2007
+
+* Don't even try to check for command child exit until its std{in,out,err} are
+  closed. Hopefully fixes problems seen on Linux by Frank Terbeck.
+* Be more consistent about lists when parsing configuration file.
+* Don't try to strip duplicates from any lists instead of trying for some of
+  them and not others.
+* remove-header now accepts a list of headers in {}.
+
+23 August 2007
+
+* Yet another fetch reorganisation to try to make it clearer. Move tracking
+  completed mail into fetch code, move mail and state stuff outside, and
+  simplify the API and data structures. Also change the way the fetch poll loop
+  works and fix some potential problems with IMAP-over-pipe. Hopefully few
+  regressions... This loses the IMAP multiple delete combining but that isn't
+  a huge loss.
+
+18 August 2007
+
+* Tidy up io code a little, break some big functions and split headers stuff
+  into dedicated io.h. Also lift fd limit.
+* Make SMTP delivery work again (blank lines were failing a length check in
+  buffer_add from io_write). SF bug 1776786.
+
+16 August 2007
+
+* Remove header action now allows fnmatch patterns.
+* Fix a silly bug with removing headers.
+* Clarify headers/body again. The body offset is now the first byte of the
+  body, so a mail of a single blank line has size == body == 1 (so, body
+  size == 0 rather than 1). "\nBody" always had body == 1 and not having
+  "\n" the same was confusing me.
+
+15 August 2007
+
+* A few POP3 servers supply an APOP cookie and then refuse the APOP command.
+  Handle them with a "no-apop" flag to POP3 account statements to disable
+  APOP. Reported by Frank Terbeck.
+
+10 August 2007
+
+* Combine append into write and exec into pipe even more to get rid of
+  deliver-append.c and deliver-exec.c.
+* add-from on stdout delivery is gone, an acceptable from line can be prepended
+  using rewrite.
+
+06 August 2007
+
+* TDB is now a mandatory dependency.
+
+03 August 2007
+
+* Fetching from mboxes.
+
+02 August 2007
+
+* Handle IMAP mails properly if they have no trailing newline.
+* Use APOP for POP3 or CRAM-MD5 for IMAP if offered by server. Note that fdm
+  currently does NOT fall back to plaintext auth if the server offers APOP
+  or CRAM-MD5 but it doesn't work.
+
+01 August 2007
+
+* fdm 1.3c released.
+* Wrong size for match buffer in pcre.c. SF.net bug 1765524.
+* Try to buffer as much as possible when reading, this prevents problems since
+  SSL_read seems to buffer data itself which poll can't know about.
+* Fix a bug with SSL where a "don't stop" error (want read/want write) would
+  make fdm think there was data received when there wasn't, resulting in
+  spurious new lines and fetching being aborted. This somehow failed to show
+  up in the two months since 1.1 was released. Reported by Steven Mestdagh.
+
+31 July 2007
+
+* Accept only ".\r\n" as terminator for POP3 and NNTP, not a '.' followed by
+  anything except '.'.
+* Don't include a leading space in the POP3 UID.
+
+30 July 2007
+
+* fdm 1.3a and 1.3b released.
+* Change to using setitimer for SSL_connect timeout. OpenBSD, and possibly
+  others, limit SO_RCVTIMEO to 327 seconds. Also try smaller timeouts if setting
+  the first one fails, to a minimum of 30 seconds. Reported by Steven Mestdagh.
+* fdm 1.3 released.
+
+25 July 2007
+
+* Tidied and refactored much of file.c and deliver-{mbox,maildir}.c.
+* Brought back fatal and fatalx as #defines which prepend __func__ and pass
+  through to log_fatal/log_fatalx.
+
+24 July 2007
+
+* Embedding an undefined macro in a string with ${} is no longer an error, it
+  is just treated as empty. This makes ifdef/endif more useful.
+
+17 July 2007
+
+* Only store shared filename (NAME_MAX) in struct shm and construct path into
+  temp dir on-the-fly. Saves (PATH_MAX - NAME_MAX) per struct.
+* Trailing newlines are now stripped from message_id tag (as they used to
+  be). This makes any existing caches by message-id useless.
+* Use SO_RCVTIMEO to apply configured timeout when connecting to SSL servers
+  (SSL_connect must block as it is the easiest way to ensure the certificate is
+  received before checking its validity).
+
+16 July 2007
+
+* Outright reject configuration files that use caches unless built with -DDB,
+  rather than waiting until the cache is used.
+* Rewrite the malloc debugging stuff: lose the call counting, use a splay
+  tree instead of a fixed array and use __builtin_return_address and direct
+  calls from xmalloc.c rather than horrible #define games, even if it means 
+  the ultimate output is less useful.
+
+15 July 2007
+
+* Permit each account to start multiple delivery child processes simultaneously
+  (up to the maximum queue length). This doesn't help much in normal cases but
+  with particularly lengthy but non-CPU-intensive delivery actions (try exec
+  "sleep 1" ;-P), it can help a lot.
+* Introduce some randomness into the lock sleep delay when waiting for mboxes.
+
+14 July 2007
+
+* Use mremap(2) on Linux.
+ 
+13 July 2007
+
+* Fix stupid bug (grr) in strb.c which caused a segfault if realloc moved the
+  buffer when it was being expanded; also clean up macros a bit when here.
+
+11 July 2007
+
+* Add %[mail_rfc822date] which contains the mail date and time (or current date
+  and time if invalid) in RFC822 format and %[rfc822date] which is the same for
+  the current date/time. I probably need to stop adding tags now $() works.
+* Additional example from Giorgio Lando (examples/g-lando.conf).
+* Add two-digit year (year2/mail_year2) and hostname tags.
+* Simplify fetching: line counting and body detection is now done globally for
+  all fetch types in the mail queuing code, as is checking for empty and 
+  oversize mails.
+* There is now no concept of a body-less mail (m->body == -1). Mails with
+  no separating blank line are assumed to be entirely body (m->body == 0),
+  otherwise the body is the first byte after the separator.
+* Fix a long-standing bug in openlock (mail.c): if open(2) failed, the lock
+  file was not removed.
+* NNTPS fetching, suggested by Maximilian Gass.
+* After rethinking, remove some useless fclose error checks.
+
+08 July 2007
+
+* Check permissions on include files as well as main configuration file.
+* First new parser bug: include files should be subject to tag replacement,
+  noticed by Frank Terbeck.
+
+05 July 2007
+
+* Move to rewritten log.c which which makes the syslog/stderr hacks I had made
+  to the old version less fugly.
+
+02 July 2007
+
+* If a mail has no body, insert new headers at the start instead of the end.
+  This matches formail's behaviour. Requested by Giorgio Lando. Note there is
+  no change to the regexp "in body" behaviour, although perhaps there should be.
+* Sort out the localtime(3)/strftime(3) mess by actually reading the man page
+  and time.h. This means July is now the seventh rather than sixth month. 
+  Reported by Giorgio Lando.
+
+29 June 2007
+
+* Split parse helper functions out into parse-fn.c and do lots of other cleanup 
+  of parse.y and lex.c.
+* New lexer makes ifdef/ifndef/endif possible, although not completely elegant.
+  Syntax is: ifdef $macro .... endif. Note that stuff inside ifdefs must still
+  be valid syntax!
+* Scrap use of lex in favour of custom C lexer. This allows (yet another)
+  workaround for include files, to make stuff like this work:
+
+	$host = $(hostname)
+	include "file.${host}"
+
+* Combine multiple IMAP deletions together into one command where possible,
+  although I doubt it makes any actual difference.
+
+28 June 2007
+
+* Shell commands may now be called when parsing the ruleset using $() and %()
+  operators:
+
+	%year = %(date +%y)
+
+	$arch = $(uname -m)
+	
+  These are executed at parse time. Sections between the brackets within "s
+  are subject to escape and macro replacement as normal; parts outside
+  quotes or inside 's are not. For example:
+
+	$SHELL = "test"
+	$cmd = $(echo "${SHELL} $SHELL \${SHELL}")
+
+  Takes advantage of the fact that fdm requires {}s and the shell does not to
+  yield:
+
+	added macro "$cmd": "test /bin/ksh /bin/ksh"
+
+  As with macros, commands may be used at any point a string or number is
+  appropriate.
+* The mail time tags (mail_year, mail_quarter, etc) now use underscores in their
+  names rather than dashes, for consistency.
+* Deliver append-string is no more, it is trivially replaced using rewrite.
+* Built-in cache using TDB (http://sourceforge.net/projects/tdb/). Currently
+  disabled by default, enabled by building with make -DDB.
+
+  Used as followed;
+
+	# Declare the cache.
+	$db = "~/.fdm.db"
+	cache $db expire 2 weeks
+
+	match not string "%[message_id]" to "" {
+		# Filter messages already in the cache.	
+		match in-cache $db key "%[message_id]" action
+			mbox "duplicate-mail"
+
+		# Add message-ids to the cache (any other string can be added
+		# but message-ids are most useful).
+		match all action
+			to-cache $db key "%[message_id]" continue
+	}
+
+  Note the guard statement - the key can't be empty and news (NNTP) messages
+  don't have a message-id.
+
+27 June 2007
+
+* New tags taken from the date header corresponding to the current time tags:
+  mail_hour, mail_year, etc. If the header is invalid, the current time is used.
+  Request/idea from Maximilian Gass.
+* Make fdm-sanitize also obfuscate the lengths of login/pass with IMAP.
+* Bug fix: "and not" rather than "not and" in ruleset -vv output.
+* "match tag ..." is now completely gone.
+* "value" keyword is now preferred for add-header action:
+
+	action "ah" add-header "My-Header" value "ABC"
+
+  but is not mandatory.
+* fdm 1.2 released.
+
+08 June 2007
+
+* Check CN against FQDN and user-supplied host when verifying SSL certificates.
+
+21 May 2007
+
+* New layout for most of the fetch code. Now pretty much everything is done
+  using a state machine for each fetch type rather than a mixture of linear
+  code and state machine. Mail is now enqueued/dequeued using callbacks rather
+  than returning status codes.
+
+16 May 2007
+
+* SHM_SYSV is no more.
+
+10 May 2007
+
+* Fix typo in manual and use DESTDIR in *akefile, from Frank Terbeck as a result
+  of Debian package creation.
+
+09 May 2007
+
+* Code tidying in io.c and command.c.
+
+08 May 2007
+
+* Couple of fixes for stupid things in ARRAY_* macros, one of which was hiding
+  a minor bug. Don't know what I was thinking when I wrote them.
+
+04 May 2007
+
+* "match tag ..." is now not supported.
+* Permit actions to call other actions:
+
+	action "one" ...
+	action "two" ...
+	action "three" {
+		 ...
+		actions { "one" "two" }
+	}
+
+  A maximum of five levels is permitted, spoiling the fun of:
+
+	action "x" { action "x" }
+
+30 April 2007
+
+* Optionally verify SSL certificates. This can be turned on with the
+  "verify-certificates" option and disabled per account by appending a
+  "no-verify" flag to the definition.
+* Option to use PCRE (build with make -DPCRE).
+
+19 April 2007
+
+* Count the number of messages properly when there is no done function (such as
+  for NNTP).
+
+10 April 2007
+
+* Install into bin rather than sbin when using GNUmakefile. From Frank Terbeck.
+
+06 April 2007
+
+* fdm 1.1 released.
+
+04 April 2007
+
+* Set the socket non-blocking in before setting up SSL in connect.c, otherwise
+  SSL_connect might block.
+
+03 April 2007
+
+* Instead of doing complicated things to see if a mmap'd region is okay, just
+  fill it with zeros using write(2). This also avoids FS fragmentation on
+  FreeBSD, per its mmap(2). Also use MAP_NOSYNC.
+
+30 March 2007
+
+* Allow plural and singular to be interchanged in most places, don't insist on
+  "accounts { "abc" }" and "account "abc"".
+
+29 March 2007
+
+* Tags are now done using an action (tag) rather than a special-case match
+  rule. The old way still works but generates a warning which will become an
+  error within a few releases.
+* Because yacc needs to move back and forwards, just swapping the file out from
+  under it when including can cause problems. So, switch to letting lex do all
+  the work and feed the include file to yacc as if it was inline. This sucks a
+  bit but there aren't many other options. Reported by Frank Terbeck.
+* Lambda actions:
+
+	match "regexp" action mbox ...
+	match "regexp" actions {
+		rewrite ...
+		mbox ...
+	}
+
+28 March 2007
+
+* Compound actions, using a list in {}s, eg:
+
+	action "abc" {
+		rewrite ...
+		mbox ...
+	}
+
+* Macros shouldn't be expanded inside single quotes. Fixed.
+* + may be used to concatenate strings.
+* Allow short-circuit evaluation of 'and' and 'or' operators.
+
+27 March 2007
+
+* Accept size with either CRLF or LF as when warning about bad size predictions
+  from POP3 servers. Google gives the size with LF and then sends the mail data
+  (as it must do) with CRLF.
+
+26 March 2007
+
+* Fix stupid use of struct strings for uid_ts and make users be printed when
+  printing rules, actions, accounts.
+* Option to use SYSV shared memory (build with make -DSHM_SYSV). Not a real
+  option, or documented, yet because I'm not sure how to deal with cleaning up
+  on SIGTERM. It might even go away again.
+* Play some games to ensure that that the full extent of the mmap'd temporary
+  file is actually writable before using it. Otherwise if there is insufficient
+  disk space we risk getting an unexpected SIGBUS later when trying to use it.
+* When sending delivery done messages, check that the child process isn't dead
+  before trying to talk to it.
+
+25 March 2007
+
+* Handle unlink(2)/fclose(3) failures, led to discovery of a missing fflush
+  before fsync and a double-unlink of a tmp file (bad!), also fixed. Part of bug
+  1687830 from Markus Elfring. Also fix some closedir(3) return value checks.
+  I'm still on the fence about close(2). SUSv3 says that it can only die on
+  EBADF, EINTR and EIO: the first will cause problems before close, and I don't
+  see how the latter can affect anything given that write(2) (or fsync(2) when
+  applicable) will have previously returned success (fdm already checks their
+  return). OTOH, it would be both tidy and future-proof to check it.
+
+22 March 2007
+
+* Return total number of mails from start function if possible and print
+  "X of Y" when reporting mail fetches with -v.
+
+21 March 2007
+
+* queue-low and queue-high options. Default queue limit is 2.
+* Default maximum-size now 32 MB and maximum now 1 GB.
+
+20 March 2007
+
+* -q option to quiet unnecessary chatter.
+* If user/pass is not specified on IMAP or POP3 accounts, attempt to read it
+  from the ~/.netrc file.
+* Redo child fetch stuff so that exec/pipe matches actually works
+* Stop exec/pipe matches early if only checking for regexp and it is found.
+* Sprinkle a few fsyncs, and block SIGTERM while writing to mboxes.
+
+18 March 2007
+
+* Informational messages now go to stdout rather than stderr.
+
+16 March 2007
+
+* Change so that the child uses poll(2) on all the fds rather than letting
+  the fetch-* stuff poll and periodically checking the parent fd.
+* Make delivery children be handled in the main loop (fdm.c) along with
+  the fetch children. This means that different accounts will not block each
+  other when delivering. I tried allowing multiple simultaneous deliveries
+  for each account but it doesn't work very well, particularly regarding
+  errors.
+
+15 March 2007
+
+* Seriously reduce -v output in favour of -vv and -vvv.
+* Save mail in a queue as it is fetched and perform matching/delivery on it
+  while waiting for the server to send the next mail. This can give a 20-50%
+  speed increase with some rulesets, particularly with slow POP3 servers.
+
+13 March 2007
+
+* Don't pass stdin to poll(3) instead of closed sockets. Fixes problems with
+  rewrite and empty mails on Linux. Reported & tested by Frank Terbeck.
+
+12 March 2007
+
+* The timeout setting is now used for commands too.
+* Expand leading ~s into home directories where appropriate.
+* Section headings are now numbered in MANUAL.
+
+11 March 2007
+
+* You can't use a va_list twice even when it's passed in as an argument. Duh.
+  Fixes segfaults on PPC. Reported by Daniel Wilmer.
+
+08 March 2007
+
+* Try to introduce some consistency into tag replacement in strings. Introduce
+  a new type (struct replstr) which indicates a string that should be replaced
+  before use, and try to make sure replacement happens possibly for all strings
+  where replacement should happen on parse. Hopefully this will make it easier
+  to handle replacement properly in future too.
+
+07 March 2007
+
+* Handle POLLHUP properly in io.c: if it is set and POLLIN isn't set, the
+  fd has closed. This makes stdin delivery work properly on Linux 2.4.
+
+06 March 2007
+
+* Submatches with commands are now added as tags command0 to command9.
+* pipe actions now use the command.c framework, which means their stderr is
+  logged and stdout discarded.
+* mail_file tag added by maildir delivery and mbox_file by mbox. Also pass the
+  tags block up and down between parent and child so these tags actually stick.
+* A new exec action, similar to pipe but stdin is /dev/null. This is useful
+  in combination with the mail_file and mbox_file tags.
+
+04 March 2007
+
+* Bug fix: fill in the correct size for maildir fetched mail rather than using
+  the rounded-up size and adding a ton of nulls.
+* -D on the command line overrides macro definitions in the configuration file.
+* Build the attachment list when the first attachment match rule is found rather
+  than for every mail regardless.
+* Add a message_id tag to each mail.
+
+03 March 2007
+
+* add-header action and lines, body_lines, header_lines tags for IMAP/POP3,
+  suggested by Frank Terbeck.
+* Linux dirname(3)/basename(3) screws up the buffer. Fixed it thanks to Frank
+  Terbeck.
+* Fixed bugs in string parsing thanks to Frank Terbeck.
+
+02 March 2007
+
+* Made add_tag use varargs and added a server_uid tag to POP3/IMAP messages.
+* Added infrastructure to maintain a cache of variable-length strings within a
+  single contiguous block of data (strb.c), so it can be passed easily up
+  to the parent process. Use this for storing mail tags to get rid of the
+  arbitrary tag length limits.
+
+28 February 2007
+
+* Man page cleanups, from Tamas TEVESZ.
+
+27 February 2007
+
+* fdm 1.0 released.
+
+22 February 2007
+
+* Fixed silly typo in NNTP code check. SF bug 1650701.
+* Included account name in received header.
+* Added stdout delivery.
+* New append-string delivery to add data to a mail.
+
+19 February 2007
+
+* Added a remove-header action to remove all instances of a header. Based on a
+  a request by Tobias Ulmer.
+
+09 February 2007
+
+* Reworked the substitution stuff. Each mail now carries a list of tag name,
+  value pairs, some of which are autogenerated (account, action, etc) and others
+  which may be added by the user. They may be inserted in strings using %[name].
+  The autogenerated tags are aliased to the old single letter tokens. Based on
+  a question from AJ Weber.
+* Added a timeout option to limit the time for which servers are waited.
+
+08 February 2007
+
+* Added file-umask and file-group options to control permissions and group
+  ownership of created mboxes and maildirs. Altered the permissions checks
+  to take this into account, and extended them to maildirs. Suggestion from
+  AJ Weber.
+* Made mbox/maildir creation clearer in documentation.
+
+07 February 2007
+
+* Added -D command line option to define a macro.
+
+05 February 2007
+
+* Made options be printed with -v.
+
+27 January 2007
+
+* Fixed attachment parsing so that it works as intended.
+
+26 January 2007
+
+* Started a changelog.
+* Assigned a number to each rule and changed logging to refer to it. Also
+  tweaked the -vv configuration file output.
+* Changed some vasprintf to xvasprintf now that the latter exists.
+* Fixed command.c to trim CR line end if present, this makes IMAP over ssh
+  work. (0.9a)
+* Fixed miscalculation of length in find_header. (0.9a)
+* Fixed find_header to locate the first rather than second instance.
+* Added FQDN and what it resolves to to the domains list by default.
+* Added a basic Received header with local host and fdm version, may be disabled
+  with the new set no-received option.
+* Free mmap'd region before mmap'ing it again in shm_realloc, otherwise the
+  actual disk space isn't freed. This affected previous versions too but
+  the mail was very rarely reallocated, now that the header is added it is.
+* Changed all the descriptions to static buffers and audited use of snprintf.
+
+$Id$
+
+ LocalWords:  Terbeck authlib DLOOKUP ISP's Alessi dayofyear Lopes gmail STAT
+ LocalWords:  akarinotengoku D'Angelo Pantyukhin BIC Erdely Rf patnel Fahlke vv
+ LocalWords:  acc std nBody Mestdagh RCVTIMEO fatalx func shm dir DDB strb rfc
+ LocalWords:  Lando openlock Gass formail's ids ABC CN SYSV akefile DPCRE abc
+ LocalWords:  mmap'd NOSYNC ts DSHM Elfring SUSv netrc vvv va Wilmer replstr AJ
+ LocalWords:  TEVESZ Ulmer mmap'ing Exp sanitize
