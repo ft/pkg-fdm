@@ -2,12 +2,12 @@ Change the user used by fdm if run as root to 'debianfdm' instead of '_fdm'
 which is not allowed in debian. (Actually I don't quite remember if it's
 strictly not permitted by debian's policy, but I've stopped caring.)
 
-Index: debian_fdm/MANUAL.in
+Index: debian_fdm/MANUAL
 ===================================================================
---- debian_fdm.orig/MANUAL.in	2013-05-05 16:59:02.000000000 +0200
-+++ debian_fdm/MANUAL.in	2013-05-05 16:59:06.000000000 +0200
-@@ -92,11 +92,11 @@
- 	$ export PREFIX=/opt		# defaults to /usr/local
+--- debian_fdm.orig/MANUAL
++++ debian_fdm/MANUAL
+@@ -92,11 +92,11 @@ installation location:
+ 	$ ./configure --prefix=/opt/fdm && make
  	$ sudo make install
  
 -If being run as root, fdm requires a user named "_fdm" to exist. It will drop
@@ -22,14 +22,14 @@ Index: debian_fdm/MANUAL.in
  
 Index: debian_fdm/fdm.h
 ===================================================================
---- debian_fdm.orig/fdm.h	2013-05-05 16:59:02.000000000 +0200
-+++ debian_fdm/fdm.h	2013-05-05 16:59:06.000000000 +0200
-@@ -54,7 +54,7 @@
+--- debian_fdm.orig/fdm.h
++++ debian_fdm/fdm.h
+@@ -52,7 +52,7 @@
  #include <openssl/ssl.h>
  #include <openssl/err.h>
  
 -#define CHILDUSER	"_fdm"
 +#define CHILDUSER	"debianfdm"
  #define CONFFILE	".fdm.conf"
- #define SYSCONFFILE	"/etc/fdm.conf"
  #define LOCKFILE	".fdm.lock"
+ #define DEFLOCKTIMEOUT	10
