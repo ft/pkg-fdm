@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 10), libssl-dev, zlib1g-dev, libpcre3-dev, libtdb-d
 Homepage: http://fdm.sf.net
 Vcs-Browser: https://github.com/ft/debian_fdm/
 Vcs-Git: git://github.com/ft/debian_fdm.git
-Standards-Version: 3.9.5
+Standards-Version: 4.1.1
 
 Package: fdm
 Architecture: any
