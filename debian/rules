@@ -2,3 +2,16 @@
 
 %:
 	dh $@ --with autoreconf
+
+deb_version := $(shell dpkg-parsechangelog | sed -ne "s/^Version: \(.*\)/\1/p")
+deb_upstream_version := $(shell echo $(deb_version) | cut -d- -f1)
+deb_package = fdm
+
+.PHONY: generate-orig-tarball
+generate-orig-tarball:
+	(set -x; pwd; f="$(deb_package)_$(deb_upstream_version).orig.tar.xz"; \
+	 test -e "$$f" && exit 0; \
+	 git archive --format=tar \
+	              --prefix="$(deb_package)_$(deb_upstream_version)/" \
+	              upstream \
+	 | xz -9 > "../$$f";)
