@@ -1,5 +1,3 @@
-version=3
-# qa.debian.org runs a redirector which allows a simpler form of URL
-# for SourceForge based projects. The format below will automatically
-# be rewritten to use the redirector.
-http://sf.net/fdm/fdm-(.+)\.(?:zip|tgz|tbz2|txz|tar\.gz|tar\.bz2|tar\.xz)
+version=4
+opts=filenamemangle=s/.+\/(\d+.\d+)\.tar\.gz/$1\/fdm-$1\.tar\.gz/ \
+  https://github.com/nicm/fdm/releases/ .+\/(\d+.\d+)\.tar\.gz
