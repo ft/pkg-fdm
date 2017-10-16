@@ -3,6 +3,9 @@
 %:
 	dh $@ --with autoreconf
 
+override_dh_installexamples:
+	dh_installexamples examples/*
+
 deb_version := $(shell dpkg-parsechangelog | sed -ne "s/^Version: \(.*\)/\1/p")
 deb_upstream_version := $(shell echo $(deb_version) | cut -d- -f1)
 deb_package = fdm
