@@ -1,3 +1,17 @@
+fdm (1.9+git20170124-1) unstable; urgency=medium
+
+  * Base package on git snapshot.
+  * Remove 02incrlinelim.patch and 03kfreebsd.patch.
+  * Update patch adjusting child process user name.
+  * Use modern debhelper.
+  * Add debian/.gitignore.
+  * Upgrade debhelper dependency.
+  * Bump standards version 4.1.0.
+  * Update debian/watch.
+  * Specify non-exsistent home for debianfdm user.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 16 Oct 2017 02:46:44 +0200
+
 fdm (1.7+cvs20140912-1) unstable; urgency=low
 
   * Import upstream CVS state.
