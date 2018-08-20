@@ -1,10 +1,11 @@
 #!/usr/bin/make -f
 
+include /usr/share/dpkg/pkg-info.mk
+
 %:
 	dh $@ --no-parallel
 
-deb_version := $(shell dpkg-parsechangelog | sed -ne "s/^Version: \(.*\)/\1/p")
-deb_upstream_version := $(shell echo $(deb_version) | cut -d- -f1)
+deb_upstream_version := $(shell echo $(DEB_VERSION) | cut -d- -f1)
 deb_package = fdm
 
 .PHONY: generate-orig-tarball
