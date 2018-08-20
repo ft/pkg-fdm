@@ -6,7 +6,7 @@ fdm (1.9+git20170124-1) unstable; urgency=medium
   * Use modern debhelper.
   * Add debian/.gitignore.
   * Upgrade debhelper dependency.
-  * Bump standards version 4.1.0.
+  * Bump standards version 4.1.1.
   * Update debian/watch.
   * Specify non-exsistent home for debianfdm user.
 
