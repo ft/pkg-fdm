@@ -8,7 +8,7 @@ fdm (1.9+git20180724-1) unstable; urgency=medium
   * debian/rules: Use pkg-info library instead of parsing changelog
   * Bump standards version to 4.2.0.1
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 21 Aug 2018 03:22:13 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 21 Aug 2018 03:22:13 +0200
 
 fdm (1.9+git20170124-1) unstable; urgency=medium
 
