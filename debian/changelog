@@ -6,6 +6,7 @@ fdm (1.9+git20180724-1) unstable; urgency=medium
   * Remove --with autoreconf from debian/rules
   * debian/control: Use secure uri in Vcs-Git
   * debian/rules: Use pkg-info library instead of parsing changelog
+  * Bump standards version to 4.2.0.1
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 21 Aug 2018 03:22:13 +0200
 
