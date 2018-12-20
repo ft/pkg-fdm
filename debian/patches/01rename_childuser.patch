@@ -2,10 +2,10 @@ Change the user used by fdm if run as root to 'debianfdm' instead of '_fdm'
 which is not allowed in debian. (Actually I don't quite remember if it's
 strictly not permitted by debian's policy, but I've stopped caring.)
 
-Index: debian_fdm/MANUAL
+Index: pkg-fdm/MANUAL
 ===================================================================
---- debian_fdm.orig/MANUAL
-+++ debian_fdm/MANUAL
+--- pkg-fdm.orig/MANUAL
++++ pkg-fdm/MANUAL
 @@ -92,11 +92,11 @@ installation location:
  	$ ./configure --prefix=/opt/fdm && make
  	$ sudo make install
@@ -20,10 +20,10 @@ Index: debian_fdm/MANUAL
  
  It is not necessary to add a user if fdm is always started by a non-root user.
  
-Index: debian_fdm/fdm.h
+Index: pkg-fdm/fdm.h
 ===================================================================
---- debian_fdm.orig/fdm.h
-+++ debian_fdm/fdm.h
+--- pkg-fdm.orig/fdm.h
++++ pkg-fdm/fdm.h
 @@ -52,7 +52,7 @@
  #include <openssl/ssl.h>
  #include <openssl/err.h>

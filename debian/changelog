@@ -1,8 +1,9 @@
 fdm (1.9+git20181219-1) unstable; urgency=medium
 
   * Update to new git snapshot.
+  * Rename debian packaging repository to pkg-fdm.
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 20 Dec 2018 14:20:00 +0100
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 20 Dec 2018 14:32:24 +0100
 
 fdm (1.9+git20180724-1) unstable; urgency=medium
 
