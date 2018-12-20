@@ -173,7 +173,7 @@ fetch_mbox_save(struct account *a, struct fetch_mbox_mbox *fmbox)
 		    a->name, this->off, this->size);
 		iov[0].iov_base = fmbox->base + this->off;
 		iov[0].iov_len = this->size;
-		iov[1].iov_base = c;
+		iov[1].iov_base = (void *)c;
 		iov[1].iov_len = 2;
 		if ((n = writev(fd, iov, 2)) < 0)
 			goto error;
@@ -213,9 +213,11 @@ free_all:
 	while (aux != NULL) {
 		this = aux;
 		aux = TAILQ_NEXT(aux, entry);
+		if (this->fmbox != fmbox)
+			continue;
 
-		if (this->fmbox == fmbox)
-			fetch_mbox_free(this);
+		TAILQ_REMOVE(&data->kept, this, entry);
+		fetch_mbox_free(this);
 	}
 
 	if (fmbox->reference != 0)
