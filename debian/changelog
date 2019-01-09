@@ -3,7 +3,7 @@ fdm (1.9+git20181219-1) unstable; urgency=medium
   * New project homepage: https://github.com/nicm/fdm (Closes: #878646)
   * Note that https://sf.net/projects/fdm/ is another project now!
   * Updated debian/watch to reflect new project location
-  * Base package on upstream git snapshot: a450cb8fd1
+  * Base package on upstream git snapshot: a450cb8fd1 (Closes: #905781)
   * Rename debian packaging repository to pkg-fdm
   * Enable hardening=+all flags in debian/rules
   * Upgrade debhelper dependency
@@ -21,7 +21,7 @@ fdm (1.9+git20181219-1) unstable; urgency=medium
   * Bump standards version to 4.2.1
   * Increase compatibility level to 11
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 09 Jan 2019 16:43:19 +0100
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 09 Jan 2019 17:19:38 +0100
 
 fdm (1.7+cvs20140912-1) unstable; urgency=low
 
