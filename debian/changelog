@@ -1,39 +1,27 @@
 fdm (1.9+git20181219-1) unstable; urgency=medium
 
-  * Update to new git snapshot
+  * New project homepage: https://github.com/nicm/fdm (Closes: #878646)
+  * Note that https://sf.net/projects/fdm/ is another project now!
+  * Updated debian/watch to reflect new project location
+  * Base package on upstream git snapshot: a450cb8fd1
   * Rename debian packaging repository to pkg-fdm
   * Enable hardening=+all flags in debian/rules
-  * Bump standards version to 4.2.1
-  * Update debian/copyright
-  * Reformat debian/copyright to machine-readable dep5-copyright
-
- -- Frank Terbeck <ft@bewatermyfriend.org>  Thu, 20 Dec 2018 15:50:33 +0100
-
-fdm (1.9+git20180724-1) unstable; urgency=medium
-
-  * Update to new git snapshot.
-  * Use debian/examples instead of override_dh_installexamples
-  * Increase compatibility level to 11
-  * Remove --with autoreconf from debian/rules
-  * debian/control: Use secure uri in Vcs-Git
+  * Upgrade debhelper dependency
+  * Use modern debhelper
+  * Add debian/.gitignore
+  * debian/rules: Remove --with autoreconf
   * debian/rules: Use pkg-info library instead of parsing changelog
-  * Bump standards version to 4.2.0.1
+  * debian/control: Use secure uri in Vcs-Git
+  * debian/copyright: Update
+  * debian/copyright: Reformat to machine-readable dep5-copyright
+  * Use debian/examples instead of override_dh_installexamples
+  * Update patch adjusting child process user name
+  * Remove 02incrlinelim.patch and 03kfreebsd.patch
+  * Specify non-exsistent home for debianfdm user
+  * Bump standards version to 4.2.1
+  * Increase compatibility level to 11
 
- -- Frank Terbeck <ft@bewatermyfriend.org>  Tue, 21 Aug 2018 03:22:13 +0200
-
-fdm (1.9+git20170124-1) unstable; urgency=medium
-
-  * Base package on git snapshot.
-  * Remove 02incrlinelim.patch and 03kfreebsd.patch.
-  * Update patch adjusting child process user name.
-  * Use modern debhelper.
-  * Add debian/.gitignore.
-  * Upgrade debhelper dependency.
-  * Bump standards version 4.1.1.
-  * Update debian/watch.
-  * Specify non-exsistent home for debianfdm user.
-
- -- Frank Terbeck <ft@bewatermyfriend.org>  Mon, 16 Oct 2017 02:46:44 +0200
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Wed, 09 Jan 2019 16:43:19 +0100
 
 fdm (1.7+cvs20140912-1) unstable; urgency=low
 
