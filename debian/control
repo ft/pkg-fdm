@@ -2,7 +2,7 @@ Source: fdm
 Section: mail
 Priority: optional
 Maintainer: Frank Terbeck <ft@bewatermyfriend.org>
-Build-Depends: debhelper (>= 12), libssl-dev, zlib1g-dev, libpcre3-dev, libtdb-dev, bison, flex
+Build-Depends: debhelper-compat (= 12), libssl-dev, zlib1g-dev, libpcre3-dev, libtdb-dev, bison, flex
 Homepage: https://github.com/nicm/fdm
 Vcs-Browser: https://github.com/ft/pkg-fdm/
 Vcs-Git: https://github.com/ft/pkg-fdm.git

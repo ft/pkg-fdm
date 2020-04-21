@@ -1,3 +1,9 @@
+fdm (1.9+git20181219-2) UNRELEASED; urgency=medium
+
+  * Set debhelper-compat version in Build-Depends.
+
+ -- Debian Janitor <janitor@jelmer.uk>  Tue, 21 Apr 2020 10:17:32 +0000
+
 fdm (1.9+git20181219-1) unstable; urgency=medium
 
   * New project homepage: https://github.com/nicm/fdm (Closes: #878646)
