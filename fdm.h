@@ -20,7 +20,6 @@
 #define FDM_H
 
 #include <sys/param.h>
-#include <sys/cdefs.h>
 #include <sys/stat.h>
 
 #ifdef HAVE_QUEUE_H
@@ -460,6 +459,8 @@ struct child {
 
 	void		*buf;
 	size_t		 len;
+
+	int		exit_req;
 };
 
 /* List of children. */
@@ -725,8 +726,8 @@ size_t		 strlcat(char *, const char *, size_t);
 
 #ifndef HAVE_B64_NTOP
 /* base64.c */
-int b64_ntop(src, srclength, target, targsize);
-int b64_pton(src, target, targsize);
+int b64_ntop(u_char const *, size_t, char *, size_t);
+int b64_pton(char const *, u_char *, size_t);
 #endif
 
 /* shm.c */
@@ -865,6 +866,7 @@ struct proxy	*getproxy(const char *);
 struct io	*connectproxy(struct server *, int, struct proxy *,
 		     const char *, int, char **);
 struct io	*connectio(struct server *, int, const char *, int, char **);
+struct io	*connectunix(const char *, char **);
 
 /* file.c */
 int printflike3	 ppath(char *, size_t, const char *, ...);

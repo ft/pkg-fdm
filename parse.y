@@ -178,6 +178,7 @@ yyerror(const char *fmt, ...)
 %token TOKKEEP
 %token TOKKEY
 %token TOKKILOBYTES
+%token TOKLMTP
 %token TOKLOCKFILE
 %token TOKLOCKTIMEOUT
 %token TOKLOCKTYPES
@@ -202,10 +203,13 @@ yyerror(const char *fmt, ...)
 %token TOKNOCREATE
 %token TOKNOLOGIN
 %token TOKNONE
+%token TOKNOPLAIN
 %token TOKNORECEIVED
 %token TOKNOT
 %token TOKNOUIDL
 %token TOKNOVERIFY
+%token TOKXOAUTH2
+%token TOKOAUTHBEARER
 %token TOKOLDONLY
 %token TOKOR
 %token TOKPARALLELACCOUNTS
@@ -306,8 +310,8 @@ yyerror(const char *fmt, ...)
 %type  <exprop> exprop
 %type  <fetch> fetchtype
 %type  <flag> cont not disabled keep execpipe writeappend compress verify
-%type  <flag> apop poptype imaptype nntptype nocrammd5 nologin uidl starttls
-%type  <flag> insecure
+%type  <flag> apop poptype imaptype nntptype nocrammd5 noplain nologin uidl
+%type  <flag> starttls insecure oauthbearer xoauth2
 %type  <localgid> localgid
 %type  <locks> lock locklist
 %type  <number> size time numv retrc expire
@@ -452,8 +456,11 @@ numv: NUMCOMMAND
 
 replstrv: strv
 	  {
-		  struct replstr	rs;
+		  struct replstr	 rs;
+		  struct userdata	*ud;
 
+		  if ((ud = user_lookup(conf.def_user, conf.user_order)) != NULL)
+			  update_tags(&parse_tags, ud);
 		  rs.str = $1;
 		  $$ = replacestr(&rs, parse_tags, NULL, NULL);
 		  xfree($1);
@@ -461,8 +468,11 @@ replstrv: strv
 
 replpathv: strv
 	   {
-		  struct replpath	rp;
+		  struct replpath	 rp;
+		  struct userdata	*ud;
 
+		  if ((ud = user_lookup(conf.def_user, conf.user_order)) != NULL)
+			  update_tags(&parse_tags, ud);
 		  rp.str = $1;
 		  $$ = replacepath(&rp, parse_tags, NULL, NULL, conf.user_home);
 		  xfree($1);
@@ -1210,12 +1220,12 @@ actitem: execpipe strv
 		 data->path.str = $2;
 		 data->compress = $3;
 	 }
-       | imaptype server userpassnetrc folder1 verify nocrammd5 nologin
-	 starttls insecure
+       | imaptype server userpassnetrc folder1 verify nocrammd5 noplain nologin
+	 starttls insecure oauthbearer xoauth2
 	 {
 		 struct deliver_imap_data	*data;
 
-		 if ($1 && $8)
+		 if ($1 && $9)
 			 yyerror("use either imaps or set starttls");
 
 		 $$ = xcalloc(1, sizeof *$$);
@@ -1224,7 +1234,10 @@ actitem: execpipe strv
 		 data = xcalloc(1, sizeof *data);
 		 $$->data = data;
 
-		 if ($3.user_netrc && $3.pass_netrc)
+		 if ($3.user && $3.pass == NULL) {
+			 data->user = $3.user;
+			 find_netrc($2.host, &data->user, &data->pass);
+		 } else if ($3.user_netrc && $3.pass_netrc)
 			 find_netrc($2.host, &data->user, &data->pass);
 		 else {
 			 if ($3.user_netrc)
@@ -1249,9 +1262,12 @@ actitem: execpipe strv
 			 data->server.port = xstrdup("imap");
 		 data->server.ai = NULL;
 		 data->nocrammd5 = $6;
-		 data->nologin = $7;
-		 data->starttls = $8;
-		 data->server.insecure = $9;
+		 data->noplain = $7;
+		 data->nologin = $8;
+		 data->starttls = $9;
+		 data->server.insecure = $10;
+		 data->oauthbearer = $10;
+		 data->xoauth2 = $11;
 	 }
        | TOKSMTP server from to
 	 {
@@ -1269,6 +1285,28 @@ actitem: execpipe strv
 		 else
 			 data->server.port = xstrdup("smtp");
 		 data->server.ai = NULL;
+		 data->from.str = $3;
+		 data->to.str = $4;
+	 }
+       | TOKLMTP server from to
+	 {
+		 struct deliver_lmtp_data       *data;
+
+		 $$ = xcalloc(1, sizeof *$$);
+		 $$->deliver = &deliver_lmtp;
+
+		 data = xcalloc(1, sizeof *data);
+		 $$->data = data;
+
+		 if (*$2.host == '/')
+			data->socket = $2.host;
+		 else {
+			data->server.host = $2.host;
+			if ($2.port != NULL)
+				data->server.port = $2.port;
+			else
+				data->server.port = xstrdup("24");
+		 }
 		 data->from.str = $3;
 		 data->to.str = $4;
 	 }
@@ -2014,6 +2052,15 @@ nocrammd5: TOKNOCRAMMD5
 		   $$ = 0;
 	   }
 
+noplain: TOKNOPLAIN
+	 {
+		 $$ = 1;
+	 }
+       | /* empty */
+	 {
+		 $$ = 0;
+	 }
+
 nologin: TOKNOLOGIN
 	 {
 		 $$ = 1;
@@ -2024,32 +2071,50 @@ nologin: TOKNOLOGIN
 	 }
 
 starttls: TOKSTARTTLS
-	{
-		$$ = 1;
-	}
-      | /* empty */
-	{
-		$$ = 0;
-	}
+	  {
+		  $$ = 1;
+	  }
+	| /* empty */
+	  {
+		  $$ = 0;
+	  }
 
 
 uidl: TOKNOUIDL
-	{
-		$$ = 0;
-	}
-      | /* empty */
-	{
-		$$ = 1;
-	}
+      {
+	      $$ = 0;
+      }
+    | /* empty */
+      {
+	      $$ = 1;
+      }
 
 insecure: TOKINSECURE
-	{
-		$$ = 1;
-	}
-      | /* empty */
-	{
-		$$ = 0;
-	}
+	  {
+		  $$ = 1;
+	  }
+	| /* empty */
+	  {
+		  $$ = 0;
+	  }
+
+oauthbearer: TOKOAUTHBEARER
+	     {
+		     $$ = 1;
+	     }
+	   | /* empty */
+	     {
+		     $$ = 0;
+	     }
+
+xoauth2: TOKXOAUTH2
+	 {
+		 $$ = 1;
+	 }
+       | /* empty */
+	 {
+		 $$ = 0;
+	 }
 
 verify: TOKNOVERIFY
 	{
@@ -2205,7 +2270,10 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data = xcalloc(1, sizeof *data);
 		   $$.data = data;
 
-		   if ($3.user_netrc && $3.pass_netrc)
+		   if ($3.user && $3.pass == NULL) {
+			   data->user = $3.user;
+			   find_netrc($2.host, &data->user, &data->pass);
+		   } else if ($3.user_netrc && $3.pass_netrc)
 			  find_netrc($2.host, &data->user, &data->pass);
 		   else {
 			   if ($3.user_netrc)
@@ -2253,18 +2321,21 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data->only = $5.only;
 	   }
 	 | imaptype server userpassnetrc folderlist imaponly verify nocrammd5
-	   nologin starttls insecure
+	   noplain nologin starttls insecure oauthbearer xoauth2
 	   {
 		   struct fetch_imap_data	*data;
 
-		   if ($1 && $9)
+		   if ($1 && $10)
 			   yyerror("use either imaps or set starttls");
 
 		   $$.fetch = &fetch_imap;
 		   data = xcalloc(1, sizeof *data);
 		   $$.data = data;
 
-		   if ($3.user_netrc && $3.pass_netrc)
+		   if ($3.user && $3.pass == NULL) {
+			   data->user = $3.user;
+			   find_netrc($2.host, &data->user, &data->pass);
+		   } else if ($3.user_netrc && $3.pass_netrc)
 			   find_netrc($2.host, &data->user, &data->pass);
 		   else {
 			   if ($3.user_netrc)
@@ -2290,9 +2361,12 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data->server.ai = NULL;
 		   data->only = $5;
 		   data->nocrammd5 = $7;
-		   data->nologin = $8;
-		   data->starttls = $9;
-		   data->server.insecure = $10;
+		   data->noplain = $8;
+		   data->nologin = $9;
+		   data->starttls = $10;
+		   data->server.insecure = $11;
+		   data->oauthbearer = $12;
+		   data->xoauth2 = $13;
 	   }
 	 | TOKIMAP TOKPIPE replstrv userpass folderlist imaponly
 	   {
@@ -2344,15 +2418,17 @@ fetchtype: poptype server userpassnetrc poponly apop verify uidl starttls
 		   data = xcalloc(1, sizeof *data);
 		   $$.data = data;
 
-		   if ($3.user_netrc && $3.pass_netrc) {
-			   if (find_netrc1($2.host,
-			       &data->user, &data->pass, &cause) != 0) {
+		   if ($3.user && $3.pass == NULL) {
+			   data->user = $3.user;
+			   find_netrc($2.host, &data->user, &data->pass);
+		   } else if ($3.user_netrc && $3.pass_netrc) {
+			   if (find_netrc1($2.host, &data->user, &data->pass,
+			       &cause) != 0) {
 				   log_debug2("%s", cause);
 				   xfree(cause);
 				   data->user = NULL;
 				   data->pass = NULL;
 			   }
-
 		   } else {
 			   if ($3.user_netrc)
 				   find_netrc($2.host, &data->user, NULL);

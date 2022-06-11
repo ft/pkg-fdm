@@ -203,7 +203,10 @@ struct fetch_imap_data {
 	char		*pipecmd;
 	int		 starttls;
 	int		 nocrammd5;
+	int		 noplain;
 	int		 nologin;
+	int		 oauthbearer;
+	int		 xoauth2;
 
 	u_int		 folder;
 	struct strings	*folders;
@@ -232,6 +235,7 @@ struct fetch_imap_data {
 	int		 (*getln)(
 			      struct account *, struct fetch_ctx *, char **);
 	int		 (*putln)(struct account *, const char *, va_list);
+	int		 (*putn)(struct account *, const char *, size_t);
 };
 
 struct fetch_imap_mail {
@@ -252,6 +256,9 @@ struct fetch_imap_mail {
 #define IMAP_CAPA_STARTTLS 0x4
 #define IMAP_CAPA_NOSPACE 0x8
 #define IMAP_CAPA_GMEXT 0x10
+#define IMAP_CAPA_AUTH_OAUTHBEARER 0x20
+#define IMAP_CAPA_AUTH_XOAUTH2 0x40
+#define IMAP_CAPA_AUTH_PLAIN 0x80
 
 /* fetch-maildir.c */
 extern struct fetch	 fetch_maildir;
@@ -281,6 +288,7 @@ int	fetch_imap_state_init(struct account *, struct fetch_ctx *);
 extern struct fetch	 fetch_imappipe;
 
 /* imap-common.c */
+int	imap_not_clean(const char *);
 int	imap_tag(char *);
 int	imap_putln(struct account *, const char *, ...);
 int	imap_getln(struct account *, struct fetch_ctx *, int, char **);

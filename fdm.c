@@ -200,13 +200,14 @@ wait_children(
 	flags = no_hang ? WNOHANG : 0;
 	for (;;) {
 		log_debug3("parent: waiting for children");
+
 		/* Wait for a child. */
 		switch (pid = waitpid(WAIT_ANY, &status, flags)) {
 		case 0:
-			return (0);
+			return (retcode);
 		case -1:
 			if (errno == ECHILD)
-				return (0);
+				return (retcode);
 			fatal("waitpid failed");
 		}
 
@@ -251,6 +252,8 @@ wait_children(
 		for (j = 0; j < ARRAY_LENGTH(children); j++) {
 			child2 = ARRAY_ITEM(children, j);
 			if (child2->parent != child)
+				continue;
+			if (child2->exit_req)
 				continue;
 
 			log_debug2("parent: child %ld died: killing %ld",
@@ -421,12 +424,15 @@ main(int argc, char **argv)
 
 	/* Fill the hostname. */
 	fill_host();
-	log_debug2("host is: %s %s %s",
-	    conf.host_name, conf.host_fqdn, conf.host_address);
+	if (conf.host_fqdn != NULL) {
+		log_debug2("host is: %s %s %s", conf.host_name, conf.host_fqdn,
+		    conf.host_address);
+	} else
+		log_debug2("host is: %s %s", conf.host_name, conf.host_address);
 
 	/* Find invoking user's details. */
 	if ((pw = getpwuid(getuid())) == NULL) {
-		log_warnx("unknown user: %lu", (u_long) geteuid());
+		log_warnx("unknown user: %lu", (u_long) getuid());
 		exit(1);
 	}
 	user = xstrdup(pw->pw_name);
@@ -717,8 +723,10 @@ retry:
 	}
 	conf.lock_file = lock;
 
+#if OPENSSL_VERSION_NUMBER < 0x10100000L || defined(LIBRESSL_VERSION_NUMBER)
 	SSL_library_init();
 	SSL_load_error_strings();
+#endif
 
 	/* Filter account list. */
 	TAILQ_INIT(&actaq);
@@ -773,7 +781,7 @@ retry:
 		ARRAY_CLEAR(&iol);
 		for (i = 0; i < ARRAY_LENGTH(&children); i++) {
 			child = ARRAY_ITEM(&children, i);
-			if (child->io != NULL)
+			if (child->io != NULL && !child->exit_req)
 				ARRAY_ADD(&iol, child->io);
 		}
 
@@ -811,6 +819,7 @@ retry:
 			msg.type = MSG_EXIT;
 			if (privsep_send(child->io, &msg, NULL) != 0)
 				fatalx("privsep_send error");
+			child->exit_req = 1;
 		}
 
 		/* Collect any dead children. */
@@ -824,6 +833,9 @@ retry:
 				child = ARRAY_ITEM(&children, i);
 				if (dead_io != child->io)
 					continue;
+				if (child->exit_req)
+					continue;
+
 				log_debug2("parent: child %ld socket error",
 				    (long) child->pid);
 				kill(child->pid, SIGTERM);
@@ -942,5 +954,6 @@ out:
 	free_strings(&conf.excl);
 #endif
 
+	log_debug2("parent: exit code %d", res);
 	exit(res);
 }

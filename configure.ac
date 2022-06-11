@@ -1,7 +1,7 @@
 # $Id$
 
-AC_INIT(fdm, 1.9)
-RELEASE=1.8
+AC_INIT(fdm, 2.1)
+RELEASE=2.1
 AC_SUBST(RELEASE)
 
 AC_CONFIG_AUX_DIR(etc)
@@ -57,9 +57,17 @@ AC_CHECK_HEADERS(
 AC_CHECK_FUNCS(
 	[ \
 		setproctitle \
-		mremap \
 		setresuid \
 		setresgid \
+	]
+)
+AC_CHECK_DECL(
+	MREMAP_MAYMOVE,
+	AC_CHECK_FUNC([mremap]),
+	,
+	[
+		#define _GNU_SOURCE
+		#include <sys/mman.h>
 	]
 )
 

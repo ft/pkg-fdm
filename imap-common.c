@@ -33,20 +33,19 @@
 #include "fetch.h"
 
 void	imap_free(void *);
-
 int	imap_parse(struct account *, int, char *);
-
-char   *imap_base64_encode(char *);
-char   *imap_base64_decode(char *);
-
 int	imap_pick_auth(struct account *, struct fetch_ctx *);
 
 int	imap_state_connect(struct account *, struct fetch_ctx *);
 int	imap_state_capability1(struct account *, struct fetch_ctx *);
 int	imap_state_capability2(struct account *, struct fetch_ctx *);
 int	imap_state_starttls(struct account *, struct fetch_ctx *);
+int	imap_state_oauthbearer_auth(struct account *, struct fetch_ctx *);
+int	imap_state_xoauth2_auth(struct account *, struct fetch_ctx *);
 int	imap_state_cram_md5_auth(struct account *, struct fetch_ctx *);
-int	imap_state_login(struct account *, struct fetch_ctx *);
+int	imap_state_plain_auth(struct account *, struct fetch_ctx *);
+int	imap_state_login1(struct account *, struct fetch_ctx *);
+int	imap_state_login2(struct account *, struct fetch_ctx *);
 int	imap_state_user(struct account *, struct fetch_ctx *);
 int	imap_state_pass(struct account *, struct fetch_ctx *);
 int	imap_state_select2(struct account *, struct fetch_ctx *);
@@ -66,6 +65,13 @@ int	imap_state_commit(struct account *, struct fetch_ctx *);
 int	imap_state_expunge(struct account *, struct fetch_ctx *);
 int	imap_state_close(struct account *, struct fetch_ctx *);
 int	imap_state_quit(struct account *, struct fetch_ctx *);
+
+/* Does this contain special characters? */
+int
+imap_not_clean(const char *s)
+{
+	return (s[strcspn(s, "\"{}")] != '\0');
+}
 
 /* Put line to server. */
 int
@@ -203,25 +209,32 @@ imap_tag(char *line)
 	return (tag);
 }
 
-/* Base64 encode string. */
+/* Base64 encode data. */
 char *
-imap_base64_encode(char *in)
+imap_base64_encode_n(const char *in, size_t inlen)
 {
 	char	*out;
 	size_t	 size;
 
-	size = (strlen(in) * 2) + 1;
+	size = (inlen * 2) + 1;
 	out = xcalloc(1, size);
-	if (b64_ntop(in, strlen(in), out, size) < 0) {
+	if (b64_ntop(in, inlen, out, size) < 0) {
 		xfree(out);
 		return (NULL);
 	}
 	return (out);
 }
 
+/* Base64 encode string. */
+char *
+imap_base64_encode(const char *in)
+{
+	return (imap_base64_encode_n(in, strlen(in)));
+}
+
 /* Base64 decode string. */
 char *
-imap_base64_decode(char *in)
+imap_base64_decode(const char *in)
 {
 	char	*out;
 	size_t	 size;
@@ -295,6 +308,18 @@ imap_pick_auth(struct account *a, struct fetch_ctx *fctx)
 {
 	struct fetch_imap_data	*data = a->data;
 
+	/* Try OAUTHBEARER, if requested by user and if server supports it. */
+	if (data->oauthbearer && (data->capa & IMAP_CAPA_AUTH_OAUTHBEARER)) {
+		fctx->state = imap_state_oauthbearer_auth;
+		return (FETCH_AGAIN);
+	}
+
+	/* Try XOAUTH2, if requested by user and if server supports it. */
+	if (data->xoauth2 && (data->capa & IMAP_CAPA_AUTH_XOAUTH2)) {
+		fctx->state = imap_state_xoauth2_auth;
+		return (FETCH_AGAIN);
+	}
+
 	/* Try CRAM-MD5, if server supports it and user allows it. */
 	if (!data->nocrammd5 && (data->capa & IMAP_CAPA_AUTH_CRAM_MD5)) {
 		if (imap_putln(a,
@@ -304,12 +329,29 @@ imap_pick_auth(struct account *a, struct fetch_ctx *fctx)
 		return (FETCH_BLOCK);
 	}
 
+	/* Try PLAIN, if server supports it and user allows it. */
+	if (!data->noplain && (data->capa & IMAP_CAPA_AUTH_PLAIN)) {
+		if (imap_putln(a,
+		    "%u AUTHENTICATE PLAIN", ++data->tag) != 0)
+			return (FETCH_ERROR);
+		fctx->state = imap_state_plain_auth;
+		return (FETCH_BLOCK);
+	}
+
 	/* Fall back to LOGIN, unless config disallows it. */
 	if (!data->nologin) {
-		if (imap_putln(a,
-		    "%u LOGIN {%zu}", ++data->tag, strlen(data->user)) != 0)
-			return (FETCH_ERROR);
-		fctx->state = imap_state_login;
+		if (imap_not_clean(data->user) || imap_not_clean(data->pass)) {
+			if (imap_putln(a, "%u LOGIN {%zu}", ++data->tag,
+			    strlen(data->user)) != 0)
+				return (FETCH_ERROR);
+			fctx->state = imap_state_login2;
+
+		} else {
+			if (imap_putln(a, "%u LOGIN \"%s\" \"%s\"", ++data->tag,
+			    data->user, data->pass) != 0)
+				return (FETCH_ERROR);
+			fctx->state = imap_state_login1;
+		}
 		return (FETCH_BLOCK);
 	}
 
@@ -398,8 +440,14 @@ imap_state_capability1(struct account *a, struct fetch_ctx *fctx)
 	}
 
 	data->capa = 0;
+	if (strstr(line, "AUTH=PLAIN") != NULL)
+		data->capa |= IMAP_CAPA_AUTH_PLAIN;
 	if (strstr(line, "AUTH=CRAM-MD5") != NULL)
 		data->capa |= IMAP_CAPA_AUTH_CRAM_MD5;
+	if (strstr(line, "AUTH=OAUTHBEARER") != NULL)
+		data->capa |= IMAP_CAPA_AUTH_OAUTHBEARER;
+	if (strstr(line, "AUTH=XOAUTH2") != NULL)
+		data->capa |= IMAP_CAPA_AUTH_XOAUTH2;
 
 	/* Use XYZZY to detect Google brokenness. */
 	if (strstr(line, "XYZZY") != NULL)
@@ -470,6 +518,91 @@ imap_state_starttls(struct account *a, struct fetch_ctx *fctx)
 	return (imap_pick_auth(a, fctx));
 }
 
+/* OAUTHBEARER auth state. */
+int
+imap_state_oauthbearer_auth(struct account *a, struct fetch_ctx *fctx)
+{
+	struct fetch_imap_data	*data = a->data;
+	char			*src, *b64;
+
+	xasprintf(&src,
+	    "n,a=%s,\001host=%s\001port=%s\001auth=Bearer %s\001\001",
+	    data->user, data->server.host, data->server.port, data->pass);
+	b64 = imap_base64_encode(src);
+	xfree(src);
+
+	if (imap_putln(a,
+	    "%u AUTHENTICATE OAUTHBEARER %s", ++data->tag, b64) != 0) {
+		xfree(b64);
+		return (FETCH_ERROR);
+	}
+	xfree(b64);
+
+	fctx->state = imap_state_pass;
+	return (FETCH_BLOCK);
+}
+
+/* OAUTH auth state. */
+int
+imap_state_xoauth2_auth(struct account *a, struct fetch_ctx *fctx)
+{
+	struct fetch_imap_data	*data = a->data;
+	char			*src, *b64;
+
+	xasprintf(&src, "user=%s\001auth=Bearer %s\001\001", data->user,
+	    data->pass);
+	b64 = imap_base64_encode(src);
+	xfree(src);
+
+	if (imap_putln(a, "%u AUTHENTICATE XOAUTH2 %s", ++data->tag, b64) != 0) {
+		xfree(b64);
+		return (FETCH_ERROR);
+	}
+	xfree(b64);
+
+	fctx->state = imap_state_pass;
+	return (FETCH_BLOCK);
+}
+
+/* PLAIN auth state. */
+int
+imap_state_plain_auth(struct account *a, struct fetch_ctx *fctx)
+{
+	struct fetch_imap_data	*data = a->data;
+	char			*line, *ptr, *out;
+	size_t			 outlen;
+	char			*b64;
+
+	if (imap_getln(a, fctx, IMAP_CONTINUE, &line) != 0)
+		return (FETCH_ERROR);
+	if (line == NULL)
+		return (FETCH_BLOCK);
+
+	ptr = line + 1;
+	while (isspace((u_char) *ptr))
+		ptr++;
+	if (*ptr != '\0' && strcmp(ptr, "\"\"") != 0)
+		return (imap_invalid(a, line));
+
+	outlen = 1 + strlen(data->user) + 1 + strlen(data->pass);
+	out = xcalloc(1, outlen);
+	memcpy(out + 1, data->user, strlen(data->user));
+	memcpy(out + 1 + strlen(data->user) + 1, data->pass,
+	    strlen(data->pass));
+	b64 = imap_base64_encode_n(out, outlen);
+	xfree(out);
+
+	if (imap_putln(a, "%s", b64) != 0) {
+		xfree(b64);
+		return (FETCH_ERROR);
+	}
+	xfree(b64);
+
+	fctx->state = imap_state_pass;
+	return (FETCH_BLOCK);
+}
+
+
 /* CRAM-MD5 auth state. */
 int
 imap_state_cram_md5_auth(struct account *a, struct fetch_ctx *fctx)
@@ -514,7 +647,30 @@ imap_state_cram_md5_auth(struct account *a, struct fetch_ctx *fctx)
 
 /* Login state. */
 int
-imap_state_login(struct account *a, struct fetch_ctx *fctx)
+imap_state_login1(struct account *a, struct fetch_ctx *fctx)
+{
+	struct fetch_imap_data	*data = a->data;
+	char			*line;
+
+	if (imap_getln(a, fctx, IMAP_TAGGED, &line) != 0)
+		return (FETCH_ERROR);
+	if (line == NULL)
+		return (FETCH_BLOCK);
+	if (!imap_okay(line)) {
+		if (imap_putln(a, "%u LOGIN {%zu}", ++data->tag,
+		    strlen(data->user)) != 0)
+ 			return (FETCH_ERROR);
+		fctx->state = imap_state_login2;
+		return (FETCH_BLOCK);
+	}
+
+	fctx->state = imap_state_select1;
+	return (FETCH_AGAIN);
+}
+
+/* Login state. */
+int
+imap_state_login2(struct account *a, struct fetch_ctx *fctx)
 {
 	struct fetch_imap_data	*data = a->data;
 	char			*line;
@@ -599,11 +755,18 @@ int
 imap_state_select1(struct account *a, struct fetch_ctx *fctx)
 {
 	struct fetch_imap_data	*data = a->data;
+	const char		*name = ARRAY_ITEM(data->folders, data->folder);
 
-	if (imap_putln(a, "%u SELECT {%zu}",
-	    ++data->tag, strlen(ARRAY_ITEM(data->folders, data->folder))) != 0)
-		return (FETCH_ERROR);
-	fctx->state = imap_state_select2;
+	if (imap_not_clean(name)) {
+		if (imap_putln(a, "%u SELECT {%zu}", ++data->tag,
+		    strlen(name)) != 0)
+			return (FETCH_ERROR);
+		fctx->state = imap_state_select2;
+	} else {
+		if (imap_putln(a, "%u SELECT \"%s\"", ++data->tag, name) != 0)
+			return (FETCH_ERROR);
+		fctx->state = imap_state_select3;
+	}
 	return (FETCH_BLOCK);
 }
 

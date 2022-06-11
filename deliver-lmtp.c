@@ -2,6 +2,7 @@
 
 /*
  * Copyright (c) 2006 Nicholas Marriott <nicholas.marriott@gmail.com>
+ * Copyright (c) 2021 Anonymous
  *
  * Permission to use, copy, modify, and distribute this software for any
  * purpose with or without fee is hereby granted, provided that the above
@@ -28,20 +29,30 @@
 #include "fdm.h"
 #include "deliver.h"
 
-int	 deliver_smtp_deliver(struct deliver_ctx *, struct actitem *);
-void	 deliver_smtp_desc(struct actitem *, char *, size_t);
+int	 deliver_lmtp_deliver(struct deliver_ctx *, struct actitem *);
+void	 deliver_lmtp_desc(struct actitem *, char *, size_t);
 
-int	 deliver_smtp_code(char *);
+int	 deliver_lmtp_code(char *);
 
-struct deliver deliver_smtp = {
-	"smtp",
+enum deliver_lmtp_state {
+	LMTP_CONNECTING,
+	LMTP_LHLO,
+	LMTP_FROM,
+	LMTP_TO,
+	LMTP_DATA,
+	LMTP_DONE,
+	LMTP_QUIT
+};
+
+struct deliver deliver_lmtp = {
+	"lmtp",
 	DELIVER_ASUSER,
-	deliver_smtp_deliver,
-	deliver_smtp_desc
+	deliver_lmtp_deliver,
+	deliver_lmtp_desc
 };
 
 int
-deliver_smtp_code(char *line)
+deliver_lmtp_code(char *line)
 {
 	char		 ch;
 	const char	*errstr;
@@ -63,26 +74,34 @@ deliver_smtp_code(char *line)
 }
 
 int
-deliver_smtp_deliver(struct deliver_ctx *dctx, struct actitem *ti)
+deliver_lmtp_deliver(struct deliver_ctx *dctx, struct actitem *ti)
 {
 	struct account			*a = dctx->account;
 	struct mail			*m = dctx->mail;
-	struct deliver_smtp_data	*data = ti->data;
+	struct deliver_lmtp_data	*data = ti->data;
 	int				 done, code;
 	struct io			*io;
-	char				*cause, *to, *from, *line, *ptr, *lbuf;
-	enum deliver_smtp_state		 state;
+	char				*cause = NULL, *to, *from, *line, *ptr;
+	char				*lbuf;
+	enum deliver_lmtp_state		 state;
 	size_t				 len, llen;
 
-	io = connectproxy(&data->server,
-	    conf.verify_certs, conf.proxy, IO_CRLF, conf.timeout, &cause);
+	if (data->socket != NULL)
+		io = connectunix(data->socket, &cause);
+	else {
+		io = connectio(&data->server, conf.verify_certs, IO_CRLF,
+		    conf.timeout, &cause);
+	}
+
 	if (io == NULL) {
 		log_warnx("%s: %s", a->name, cause);
 		xfree(cause);
 		return (DELIVER_FAILURE);
 	}
+
 	if (conf.debug > 3 && !conf.syslog)
 		io->dup_fd = STDOUT_FILENO;
+
 
 	llen = IO_LINESIZE;
 	lbuf = xmalloc(llen);
@@ -105,57 +124,59 @@ deliver_smtp_deliver(struct deliver_ctx *dctx, struct actitem *ti)
 		from = xstrdup(ptr);
 	else {
 		from = replacestr(&data->from, m->tags, m, &m->rml);
-		if (from == NULL) {
+		if (from == NULL || *from == '\0') {
 			xasprintf(&cause, "%s: empty from", a->name);
 			goto error;
 		}
 	}
 	xfree(ptr);
 
-	state = SMTP_CONNECTING;
-	line = NULL;
+	state = LMTP_CONNECTING;
 	done = 0;
 	do {
-		switch (io_pollline2(io,
-		    &line, &lbuf, &llen, conf.timeout, &cause)) {
+		switch (io_pollline2(io, &line, &lbuf, &llen, conf.timeout,
+		    &cause)) {
 		case 0:
 			cause = xstrdup("connection unexpectedly closed");
 			goto error;
 		case -1:
 			goto error;
 		}
-		code = deliver_smtp_code(line);
+		code = deliver_lmtp_code(line);
 
-		cause = NULL;
 		switch (state) {
-		case SMTP_CONNECTING:
+		case LMTP_CONNECTING:
 			if (code != 220)
 				goto error;
-			state = SMTP_HELO;
+
+			state = LMTP_LHLO;
 			if (conf.host_fqdn != NULL)
-				io_writeline(io, "HELO %s", conf.host_fqdn);
+				io_writeline(io, "LHLO %s", conf.host_fqdn);
 			else
-				io_writeline(io, "HELO %s", conf.host_name);
+				io_writeline(io, "LHLO %s", conf.host_name);
 			break;
-		case SMTP_HELO:
+		case LMTP_LHLO:
 			if (code != 250)
 				goto error;
-			state = SMTP_FROM;
-			io_writeline(io, "MAIL FROM:<%s>", from);
+
+			if (line[3] == ' ') {
+				state = LMTP_FROM;
+				io_writeline(io, "MAIL FROM:<%s>", from);
+			}
 			break;
-		case SMTP_FROM:
+		case LMTP_FROM:
 			if (code != 250)
 				goto error;
-			state = SMTP_TO;
+			state = LMTP_TO;
 			io_writeline(io, "RCPT TO:<%s>", to);
 			break;
-		case SMTP_TO:
+		case LMTP_TO:
 			if (code != 250)
 				goto error;
-			state = SMTP_DATA;
+			state = LMTP_DATA;
 			io_writeline(io, "DATA");
 			break;
-		case SMTP_DATA:
+		case LMTP_DATA:
 			if (code != 354)
 				goto error;
 			line_init(m, &ptr, &len);
@@ -173,17 +194,17 @@ deliver_smtp_deliver(struct deliver_ctx *dctx, struct actitem *ti)
 
 				line_next(m, &ptr, &len);
 			}
-			state = SMTP_DONE;
+			state = LMTP_DONE;
 			io_writeline(io, ".");
 			io_flush(io, conf.timeout, NULL);
 			break;
-		case SMTP_DONE:
+		case LMTP_DONE:
 			if (code != 250)
 				goto error;
-			state = SMTP_QUIT;
+			state = LMTP_QUIT;
 			io_writeline(io, "QUIT");
 			break;
-		case SMTP_QUIT:
+		case LMTP_QUIT:
 			/*
 			 * Exchange sometimes refuses to accept QUIT as a valid
 			 * command, but since we got a 250 the mail has been
@@ -228,11 +249,16 @@ error:
 }
 
 void
-deliver_smtp_desc(struct actitem *ti, char *buf, size_t len)
+deliver_lmtp_desc(struct actitem *ti, char *buf, size_t len)
 {
-	struct deliver_smtp_data	*data = ti->data;
+	struct deliver_lmtp_data	*data = ti->data;
 
-	xsnprintf(buf, len, "smtp%s server \"%s\" port %s to \"%s\"",
-	    data->server.ssl ? "s" : "", data->server.host, data->server.port,
-	    data->to.str == NULL ? "" : data->to.str);
+	if (data->socket != NULL) {
+		xsnprintf(buf, len, "lmtp-unix \"%s\" to \"%s\"",
+		    data->socket, data->to.str);
+	} else {
+		xsnprintf(buf, len, "lmtp-inet \"%s\" port \"%s\" to \"%s\"",
+		    data->server.host, data->server.port, data->to.str);
+	}
 }
+

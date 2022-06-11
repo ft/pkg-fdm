@@ -50,6 +50,7 @@ dist_fdm_SOURCES = \
 	deliver-drop.c \
 	deliver-imap.c \
 	deliver-keep.c \
+	deliver-lmtp.c \
 	deliver-maildir.c \
 	deliver-mbox.c \
 	deliver-pipe.c \
@@ -122,7 +123,4 @@ nodist_fdm_SOURCES += compat/strlcpy.c
 endif
 if NO_STRTONUM
 nodist_fdm_SOURCES += compat/strtonum.c
-endif
-if NO_B64_NTOP
-nodist_fdm_SOURCES += compat/base64.c
 endif
