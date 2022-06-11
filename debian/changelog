@@ -7,6 +7,7 @@ fdm (2.1-1) unstable; urgency=medium
   * Specify that the sources do not require root to build.
   * Add upstream meta-data file.
   * watch: Remove filenamemangle option.
+  * lintian: Disabled upstream signature check.
   * Upgrade standards version to 4.6.1.
   * Upgrade debhelper compatibility to 13 and newer.
 
