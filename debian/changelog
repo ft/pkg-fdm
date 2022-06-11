@@ -1,11 +1,12 @@
 fdm (2.1-1) unstable; urgency=medium
 
   * New upstream release.
-  * Upgrade standards version to 4.6.1.
-  * Upgrade debhelper compatibility to 13 and newer.
-  * Add configuration for git-buildpackage.
   * Update copyright years.
   * Remove obsolete debian/compat file.
+  * Add configuration for git-buildpackage.
+  * Specify that the sources do not require root to build.
+  * Upgrade standards version to 4.6.1.
+  * Upgrade debhelper compatibility to 13 and newer.
 
  -- Frank Terbeck <ft@bewatermyfriend.org>  Sat, 11 Jun 2022 16:59:31 +0200
 
