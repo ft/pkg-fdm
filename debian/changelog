@@ -1,3 +1,12 @@
+fdm (2.1-1) unstable; urgency=medium
+
+  * New upstream release.
+  * Upgrade standards version to 4.6.1.
+  * Upgrade debhelper compatibility to 13 and newer.
+  * Add configuration for git-buildpackage.
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sat, 11 Jun 2022 16:59:31 +0200
+
 fdm (1.9+git20181219-1) unstable; urgency=medium
 
   * New project homepage: https://github.com/nicm/fdm (Closes: #878646)
