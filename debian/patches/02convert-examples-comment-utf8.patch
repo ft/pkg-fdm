@@ -1,0 +1,17 @@
+Lintian complains about non UTF-8 encodings. This converts one such
+instance in an example that gets installed with the package. It changes
+nothing about the functionality of the file.
+
+Index: pkg-fdm/examples/g-lando.conf
+===================================================================
+--- pkg-fdm.orig/examples/g-lando.conf
++++ pkg-fdm/examples/g-lando.conf
+@@ -6,7 +6,7 @@ cache $db expire 1 month
+ # a reasonable timeout for my pop3s server
+ set timeout 60
+ 
+-# my maildirs à la pine, with action, month and two digits year tags
++# my maildirs Ã  la pine, with action, month and two digits year tags
+ action 'received' maildir "%h/.maildir/%t-%m-%[year2]"
+ action 'banca' maildir "%h/.maildir/%t-%m-%[year2]"
+ action 'crux' maildir "%h/.maildir/%t-%m-%[year2]"
