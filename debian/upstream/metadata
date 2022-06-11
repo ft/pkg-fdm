@@ -1,0 +1,9 @@
+%YAML 1.1
+---
+# https://wiki.debian.org/UpstreamMetadata
+Bug-Database: https://github.com/nicm/fdm/issues
+Bug-Submit: https://github.com/nicm/fdm/issues/new
+Name: fdm
+Repository: https://github.com/nicm/fdm.git
+Repository-Browse: https://github.com/nicm/fdm
+Documentation: https://github.com/nicm/fdm/blob/master/MANUAL

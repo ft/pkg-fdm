@@ -5,6 +5,7 @@ fdm (2.1-1) unstable; urgency=medium
   * Remove obsolete debian/compat file.
   * Add configuration for git-buildpackage.
   * Specify that the sources do not require root to build.
+  * Add upstream meta-data file.
   * Upgrade standards version to 4.6.1.
   * Upgrade debhelper compatibility to 13 and newer.
 
