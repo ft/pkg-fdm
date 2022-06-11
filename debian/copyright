@@ -3,7 +3,7 @@ Upstream-Name: fdm
 Source: https://github.com/nicm/fdm
 
 Files: *
-Copyright: 2006-2018 Nicholas Marriott <nicholas.marriott@gmail.com>
+Copyright: 2006-2022 Nicholas Marriott <nicholas.marriott@gmail.com>
 License: ISC
 
 Files: netrc.c
@@ -19,7 +19,7 @@ Copyright: 2002 Niels Provos <provos@citi.umich.edu>
 License: BSD-2-clause
 
 Files: debian/*
-Copyright: 2007-2018 Frank Terbeck <ft@bewatermyfriend.org>
+Copyright: 2007-2022 Frank Terbeck <ft@bewatermyfriend.org>
 License: ISC
 
 License: ISC
