@@ -6,6 +6,10 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 %:
 	dh $@ --no-parallel
 
+.PHONY: override_dh_auto_configure
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-pcre2
+
 deb_upstream_version := $(shell echo $(DEB_VERSION) | cut -d- -f1)
 deb_package = fdm
 
