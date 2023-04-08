@@ -1,3 +1,15 @@
+fdm (2.2+git20230403-1) unstable; urgency=medium
+
+  * New upstream release.
+  * [f1ec1982] Fix bugs in PCRE2 code.
+  * [028f59be] Fix use-after-free.
+  * Upgrade standards version to 4.6.2.
+  * Update debian package copyright years.
+  * Update lintian override to renamed tag.
+  * Re-Enable PCRE functionality. (Closes: #1034047)
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sat, 08 Apr 2023 18:25:34 +0200
+
 fdm (2.1-1) unstable; urgency=medium
 
   * New upstream release.
