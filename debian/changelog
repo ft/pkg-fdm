@@ -1,3 +1,14 @@
+fdm (2.2+git20250202-1) unstable; urgency=medium
+
+  * [96b4e436] Replace obsolete macros AC_HELP_STRING and AC_TRY_LINK,
+    from Aaron Ji.
+  * [0918b78a] Send UTF8 command to POP3 server (ignore the response),
+    because some servers don't like UTF-8 without it.
+  * [451c12c6] Update debian standards-version to 4.7.0
+  * [a0202224] Update debian package copyright years
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 02 Feb 2025 12:21:03 +0100
+
 fdm (2.2+git20230403-1) unstable; urgency=medium
 
   * New upstream release.
