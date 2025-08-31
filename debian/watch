@@ -1,2 +1,4 @@
 version=4
-https://github.com/nicm/fdm/releases/ .+\/(\d+.\d+)\.tar\.gz
+opts=searchmode=plain,filenamemangle=s/.+\/fdm-(\d+\.\d+)\.tar\.gz/$1\/fdm-$1\.tar\.gz/ \
+  https://api.github.com/repos/nicm/fdm/releases \
+  https://[^:]+\/fdm-(\d+\.\d+)\.tar\.gz
