@@ -10,14 +10,18 @@ export DEB_BUILD_MAINT_OPTIONS=hardening=+all
 override_dh_auto_configure:
 	dh_auto_configure -- --enable-pcre2
 
+deb_upstream_branch=heads/upstream
+deb_branch=heads/master
 deb_upstream_version := $(shell echo $(DEB_VERSION) | cut -d- -f1)
 deb_package = fdm
 
 .PHONY: generate-orig-tarball
 generate-orig-tarball:
 	(set -x; pwd; f="$(deb_package)_$(deb_upstream_version).orig.tar.xz"; \
-	 test -e "$$f" && exit 0; \
-	 git archive --format=tar \
-	              --prefix="$(deb_package)_$(deb_upstream_version)/" \
-	              upstream \
+	 test -e "$$f" && exit 0;                                             \
+	 base=$$(git merge-base $(deb_upstream_branch) $(deb_branch));        \
+	 msg=$$(git log --format=%s -1 "$$base");                             \
+	 git archive --format=tar                                             \
+	              --prefix="$(deb_package)_$(deb_upstream_version)/"      \
+	              "$$base"                                                \
 	 | xz -9 > "../$$f";)
