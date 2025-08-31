@@ -1,3 +1,12 @@
+fdm (2.2+git20250202-2) unstable; urgency=medium
+
+  * [41080502] Fix detection patterns in debian/watch (Closes: #1111570)
+  * [1b356f9c] gbp: Fix debian version tag pattern in gbp.conf
+  * [0d33d161] Improve upstream tarball generation
+  * [f370008f] Update debian standards version to 4.7.2
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Sun, 31 Aug 2025 20:39:16 +0200
+
 fdm (2.2+git20250202-1) unstable; urgency=medium
 
   * [96b4e436] Replace obsolete macros AC_HELP_STRING and AC_TRY_LINK,
