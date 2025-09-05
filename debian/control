@@ -6,7 +6,7 @@ Build-Depends: debhelper (>= 13),
                debhelper-compat (= 13),
                libssl-dev,
                zlib1g-dev,
-               libpcre3-dev,
+               libpcre2-dev,
                libtdb-dev,
                bison,
                flex
