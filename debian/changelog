@@ -1,3 +1,9 @@
+fdm (2.2+git20250202-3) unstable; urgency=medium
+
+  * [6c9d60e7] Build-depend upon libpcre2-dev
+
+ -- Frank Terbeck <ft@bewatermyfriend.org>  Fri, 05 Sep 2025 23:28:17 +0200
+
 fdm (2.2+git20250202-2) unstable; urgency=medium
 
   * [41080502] Fix detection patterns in debian/watch (Closes: #1111570)
